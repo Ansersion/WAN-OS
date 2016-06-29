@@ -56,24 +56,9 @@ typedef struct
 #define REG_EXP_PRI_PEND_SV 		((uint32_t *)0xE000ED22)
 #define REG_EXP_PRI_SYSTICK 		((uint32_t *)0xE000ED23)
 
-static uint32_t * IRQ_PriorityRegList[] = {
-	0,
-	0, 
-	0, 
-	0, 
-	REG_EXP_PRI_MEM, 
-	REG_EXP_PRI_BUS, 
-	REG_EXP_PRI_USAGE, 
-	REG_EXP_PRI_NULL_7, 
-	REG_EXP_PRI_NULL_8, 
-	REG_EXP_PRI_NULL_9, 
-	REG_EXP_PRI_NULL_10,
-	REG_EXP_PRI_SVC, 
-	REG_EXP_PRI_DEBUG, 
-	REG_EXP_PRI_NULL_13,
-	REG_EXP_PRI_PEND_SV,
-	REG_EXP_PRI_SYSTICK
-};
+#define PMT_IRQ_NUM 				16
+
+static uint32_t * IRQ_PriorityRegList[16];
 
 #define PMT_IRQ_PRIORITY_0 			0x00
 #define PMT_IRQ_PRIORITY_1 			0x10
@@ -196,7 +181,38 @@ volatile int32_t Init_IRQGroup(uint32_t GroupLimit)
 
 void IRQ_Init(void)
 {
+
+	int i;
+	int count;
+	IRQ_PriorityRegList[0] = 0;
+	IRQ_PriorityRegList[1] = 0; 
+	IRQ_PriorityRegList[2] = 0; 
+	IRQ_PriorityRegList[3] = 0; 
+	IRQ_PriorityRegList[4] = REG_EXP_PRI_MEM; 
+	IRQ_PriorityRegList[5] = REG_EXP_PRI_BUS; 
+	IRQ_PriorityRegList[6] = REG_EXP_PRI_USAGE; 
+	IRQ_PriorityRegList[7] = REG_EXP_PRI_NULL_7; 
+	IRQ_PriorityRegList[8] = REG_EXP_PRI_NULL_8; 
+	IRQ_PriorityRegList[9] = REG_EXP_PRI_NULL_9; 
+	IRQ_PriorityRegList[10] = REG_EXP_PRI_NULL_10;
+	IRQ_PriorityRegList[11] = REG_EXP_PRI_SVC; 
+	IRQ_PriorityRegList[12] = REG_EXP_PRI_DEBUG; 
+	IRQ_PriorityRegList[13] = REG_EXP_PRI_NULL_13;
+	IRQ_PriorityRegList[14] = REG_EXP_PRI_PEND_SV;
+	IRQ_PriorityRegList[15] = REG_EXP_PRI_SYSTICK;
+	*REG_SYSTICK_CTRL = 0;
+	*REG_ICSR |= MSK_SYSTICK_CLRPEND;
+	*REG_ICSR |= MSK_PENDSV_CLRPEND;
+	// IRQ_ClrPend(PMT_EXP_SYSTICK);
+	// IRQ_ClrPend(PMT_EXP_PEND_SV);
 	*REG_IRQ_VTOR = VTOR_RAM | WAN_VTOR_ADDRESS;
+	count = 3;
+	while(count--) {
+		for(i = 0; i < 5000000; i++) {
+		}
+		LED_RED_TURN();
+	}
+	IRQ_UNLOCK(); // we have ever locked IRQ in 'wan-kernel.s'
 }
 
 volatile int32_t IRQ_SetPriority(uint32_t IRQ_Number, uint8_t Priority)
@@ -227,14 +243,14 @@ volatile int32_t IRQ_SetPend(uint32_t IRQ_Number)
 volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number)
 {
 	if(PMT_EXP_SYSTICK == IRQ_Number) {
-		SHUTDOWN_IRQ();
+		IRQ_LOCK();
 		*REG_ICSR |= MSK_SYSTICK_CLRPEND;
-		OPEN_IRQ();
+		IRQ_UNLOCK();
 	}
 	if(PMT_EXP_PEND_SV == IRQ_Number) {
-		SHUTDOWN_IRQ();
+		IRQ_LOCK();
 		*REG_ICSR |= MSK_PENDSV_CLRPEND;
-		OPEN_IRQ();
+		IRQ_UNLOCK();
 	}
 	return 0;
 }

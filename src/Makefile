@@ -1,6 +1,7 @@
 ARM_GCC_MAIN_DIR=/opt/gcc-arm-none-eabi-5_3-2016q1
 PREFIX=$(ARM_GCC_MAIN_DIR)/bin/arm-none-eabi
 # PREFIX=arm-linux-gnueabi
+# PREFIX=arm-linux-gnueabi
 
 TARGET=wan-kernel.bin
 
@@ -34,7 +35,7 @@ OBJ 	+= $(A_OBJ)
 ALL: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(LD) -T sct.ld -o wan-kernel.out $(OBJ)
+	$(CC) -T sct.ld -mcpu=cortex-m3 -mthumb -flto -fno-builtin -nostartfiles -o wan-kernel.out $(OBJ)
 	$(OBJCOPY) -Obinary wan-kernel.out $(TARGET)
 	$(OBJDUMP) -S wan-kernel.out > wan-kernel.list
 	cscope -Rbq

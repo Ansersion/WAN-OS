@@ -1,3 +1,7 @@
+#include "printf_to_serial.h"
+#include "irq.h"
+#include <stdio.h>
+
 typedef struct
 { 
 	volatile unsigned int CRL; 
@@ -18,16 +22,18 @@ typedef struct
 #define LED_RED_TURN() 	(GPIOA->ODR ^= 1<<8)
 #define LED_GREEN_TURN() (GPIOD->ODR ^= 1<<2)
 
-#include "irq.h"
 
 void main()
 {
 	int i;
-	IRQ_Init();
+	// IRQ_Init();
+	// Init_SysTickIRQ(9000, 1);
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
 		LED_RED_TURN();
+		// printf("a\r\n");
+		// LED_GREEN_TURN();
 	}
 }
 

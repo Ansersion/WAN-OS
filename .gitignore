@@ -2,3 +2,5 @@
 cscope*
 .*swp
 .bin
+.list
+.out

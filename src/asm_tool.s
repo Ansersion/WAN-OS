@@ -1,14 +1,14 @@
 .text
-.global 	SHUTDOWN_IRQ, OPEN_IRQ
+.global 	IRQ_LOCK, IRQ_UNLOCK
 .code 		16
 .syntax 	unified
 .align
 
-SHUTDOWN_IRQ:
+IRQ_LOCK:
 	CPSID 	I
 	BX 		LR
 
-OPEN_IRQ:
+IRQ_UNLOCK:
 	CPSIE 	I
 	BX 		LR
 

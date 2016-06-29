@@ -45,7 +45,7 @@
 #define REG_CLRPEND7 	((uint32_t *)0xE000E29C)
 
 #define WAN_OS_RAM 	((uint32_t)0x20004000)
-#define WAN_VTOR_ADDRESS 	((uint32_t)0x00004200)
+#define WAN_VTOR_ADDRESS 	((uint32_t)0x00000200)
 #define VTOR_RAM 	((uint32_t)0x20000000)
 #define VTOR_R0M 	((uint32_t)0x00000000)
 #define REG_ICSR 	((uint32_t *)0xE000ED04)
@@ -82,7 +82,7 @@ void IRQ_NULL_13(void);
 void IRQ_PendSV(void);
 void IRQ_SysTick(void);
 
-void SHUTDOWN_IRQ(void); // asm function(asm_tool.s)
-void OPEN_IRQ(void); // asm function(asm_tool.s)
+void IRQ_LOCK(void); // asm function(asm_tool.s)
+void IRQ_UNLOCK(void); // asm function(asm_tool.s)
 
 #endif
