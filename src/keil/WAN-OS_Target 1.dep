@@ -1,0 +1,17 @@
+Dependencies for Project 'WAN-OS', Target 'Target 1': (DO NOT MODIFY !)
+F (..\init.c)(0x57747E78)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\..\src-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\3.20.4\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.4\Device\Include-DSTM32F10X_HD -o .\init.o --omf_browse .\init.crf --depend .\init.d)
+I (..\init.h)(0x57747E78)
+F (..\main.c)(0x57747E78)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\..\src-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\3.20.4\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.4\Device\Include-DSTM32F10X_HD -o .\main.o --omf_browse .\main.crf --depend .\main.d)
+I (..\irq.h)(0x577483A9)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x52FDD27E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x52FDD27E)
+I (..\stm32f10x_usart.h)(0x57747E78)
+F (..\stm32f10x_usart.c)(0x57747E78)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\..\src-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\3.20.4\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.4\Device\Include-DSTM32F10X_HD -o .\stm32f10x_usart.o --omf_browse .\stm32f10x_usart.crf --depend .\stm32f10x_usart.d)
+I (..\stm32f10x_usart.h)(0x57747E78)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x52FDD27E)
+F (.\startup_stm32f10x_hd.s)(0x57640866)(--cpu Cortex-M3 -g --apcs=interwork -I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\3.20.4\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.4\Device\Include--list .\startup_stm32f10x_hd.lst --xref -o .\startup_stm32f10x_hd.o --depend .\startup_stm32f10x_hd.d)
+F (..\irq.c)(0x5774842F)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I..\..\src-I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\3.20.4\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.4\Device\Include-DSTM32F10X_HD -o .\irq.o --omf_browse .\irq.crf --depend .\irq.d)
+I (..\irq.h)(0x577483A9)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x52FDD27E)
+I (..\stm32f10x_usart.h)(0x57747E78)
+F (.\asm_tool_keil.s)(0x57748932)(--cpu Cortex-M3 -g --apcs=interwork -I C:\Keil_v5\ARM\RV31\INC-I C:\Keil_v5\ARM\PACK\ARM\CMSIS\3.20.4\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.4\Device\Include--list .\asm_tool_keil.lst --xref -o .\asm_tool_keil.o --depend .\asm_tool_keil.d)

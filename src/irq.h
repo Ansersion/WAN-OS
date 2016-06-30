@@ -3,6 +3,24 @@
 
 #include <stdint.h>
 
+#ifdef __KEIL__
+#define IRQ_Reset 	Reset_Handler     
+#define IRQ_Nmi 	NMI_Handler       
+#define IRQ_HardFault 	HardFault_Handler 
+#define IRQ_MemManage 	MemManage_Handler 
+#define IRQ_BusFault 	BusFault_Handler  
+#define IRQ_UsageFault 	UsageFault_Handler
+// #define IRQ_NULL_7 	Reserved_Handler                 
+// #define IRQ_NULL_8 	Reserved_Handler              
+// #define IRQ_NULL_9 	Reserved_Handler                 
+// #define IRQ_NULL_10 	Reserved_Handler                 
+#define IRQ_SVC 	SVC_Handler       
+#define IRQ_DebugMon	DebugMon_Handler  
+// #define IRQ_NULL_13	Reserved_Handler                 
+#define IRQ_PendSV	PendSV_Handler    
+#define IRQ_SysTick	SysTick_Handler   
+#endif
+
 /*****Register of IRQ Vectors Offset***
  */
 #define REG_IRQ_VTOR 	((uint32_t *)0xE000ED08)

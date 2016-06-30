@@ -1,6 +1,12 @@
 *.[oa]
 cscope*
 .*swp
+*~
 *.bin
 *.list
 *.out
+*.d
+*.crf
+*.lst
+*.map
+*.axf
