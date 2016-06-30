@@ -1,6 +1,6 @@
-#include "printf_to_serial.h"
 #include "irq.h"
 #include <stdio.h>
+#include "stm32f10x_usart.h"
 
 typedef struct
 { 
@@ -26,13 +26,44 @@ typedef struct
 void main()
 {
 	int i;
+	// int count;
 	// IRQ_Init();
-	// Init_SysTickIRQ(9000, 1);
+	Init_SysTickIRQ(9000, 1);
+	i = 3;
+	while(--i > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('f');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
+	IRQ_LOCK();
+	while(--i > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('g');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
+
+	// count = 3;
+	// while(count--) {
+	// 	for(i = 0; i < 5000000; i++) {
+	// 	}
+	// 	LED_RED_TURN();
+	// }
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
 		LED_RED_TURN();
-		// printf("a\r\n");
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('a');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\r');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\n');
 		// LED_GREEN_TURN();
 	}
 }

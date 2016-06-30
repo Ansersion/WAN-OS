@@ -1,6 +1,6 @@
 *.[oa]
 cscope*
 .*swp
-.bin
-.list
-.out
+*.bin
+*.list
+*.out

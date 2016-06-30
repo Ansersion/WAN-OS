@@ -95,38 +95,6 @@ _start:
 				ldr 	r1, [r0]
 				orr 	r1, #0xFFFFFFFF
 				str 	r1, [r0]
-				
-@                 ldr             r0,=RCC_CR
-@                 ldr             r1,[r0]
-@                 orr             r1,#Bit16
-@                 str             r1,[r0]
-@ ClkOk:
-@                 ldr             r1,[r0]
-@                 ands            r1,#Bit17
-@                 beq             ClkOk
-@                 ldr             r1,[r0]
-@                 orr             r1,#Bit17
-@                 str             r1,[r0]                                                                                                                                                                                                                                                                              
-@                 
-@                 ldr             r0,=FLASH_ACR
-@                 mov             r1,#0x00000032
-@                 str             r1,[r0]
-@                 
-@                 ldr             r0,=RCC_CFGR
-@                 ldr             r1,[r0]
-@                 orr             r1,#Bit18 | Bit19 | Bit20 | Bit16 | Bit14
-@                 orr             r1,#Bit10
-@                 str             r1,[r0]
-@                 
-@                 ldr             r0,=RCC_CR
-@                 ldr             r1,[r0]
-@                 orr             r1,#Bit24
-@                 str             r1,[r0]
-
-@ 				mov 	r4, #0 
-@ 				mov 	r5, #0 
-				
-				
 
 				bl 		main
 

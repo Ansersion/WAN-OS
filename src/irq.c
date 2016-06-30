@@ -1,4 +1,5 @@
 #include "irq.h"
+#include "stm32f10x_usart.h"
 
 typedef struct
 { 
@@ -91,22 +92,50 @@ void IRQ_Nmi()
 
 void IRQ_HardFault(void)
 {
-	while(1);
+	while(1) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('H');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
 }
 
 void IRQ_MemManage(void)
 {
-	while(1);
+	while(1) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('M');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
 }
 
 void IRQ_BusFault(void)
 {
-	while(1);
+	while(1) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('B');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
 }
 
 void IRQ_UsageFault(void)
 {
-	while(1);
+	while(1) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('U');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
 }
 
 void IRQ_NULL_7(void)
@@ -161,15 +190,62 @@ void IRQ_SysTick(void)
 #define PRM_SYSTICK_CTRL_ENABLE 		0x00000001 /* Flag of enabling systick to time */
 volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 {
+	int count;
 	if(Ticks > PRM_MAX_TICKS) {
 		return -1;
 	}
-	IRQ_SetPriority(PMT_EXP_SYSTICK, PMT_IRQ_PRIORITY_1);
-	*REG_SYSTICK_LOAD 	= Ticks - 1;
-	*REG_SYSTICK_VAL 	= 0;
-	*REG_SYSTICK_CTRL 	= PRM_SYSTICK_CTRL_CLKSRC_CORE | 
-							PRM_SYSTICK_CTRL_TICKINT |
-							PRM_SYSTICK_CTRL_ENABLE;
+	count = 3;
+	while(--count > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('a');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
+	// IRQ_SetPriority(PMT_EXP_SYSTICK, PMT_IRQ_PRIORITY_1);
+
+	count = 3;
+	while(--count > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('b');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
+	// *REG_SYSTICK_LOAD 	= Ticks - 1;
+	count = 3;
+	while(--count > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('c');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
+	// *REG_SYSTICK_VAL 	= 0;
+	count = 3;
+	while(--count > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('d');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
+	// *REG_SYSTICK_CTRL 	= PRM_SYSTICK_CTRL_CLKSRC_CORE | 
+	// 						PRM_SYSTICK_CTRL_TICKINT |
+	// 						PRM_SYSTICK_CTRL_ENABLE;
+	count = 3;
+	while(--count > 0) {
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('e');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\r');
+		while((USART1->SR&0X40)==0);
+		USART1_SEND('\n');
+	}
 	return 0;
 }
 
@@ -205,13 +281,13 @@ void IRQ_Init(void)
 	*REG_ICSR |= MSK_PENDSV_CLRPEND;
 	// IRQ_ClrPend(PMT_EXP_SYSTICK);
 	// IRQ_ClrPend(PMT_EXP_PEND_SV);
-	*REG_IRQ_VTOR = VTOR_RAM | WAN_VTOR_ADDRESS;
-	count = 3;
-	while(count--) {
-		for(i = 0; i < 5000000; i++) {
-		}
-		LED_RED_TURN();
-	}
+	// *REG_IRQ_VTOR = VTOR_RAM | WAN_VTOR_ADDRESS;
+	// count = 3;
+	// while(count--) {
+	// 	for(i = 0; i < 5000000; i++) {
+	// 	}
+	// 	LED_RED_TURN();
+	// }
 	IRQ_UNLOCK(); // we have ever locked IRQ in 'wan-kernel.s'
 }
 
