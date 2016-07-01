@@ -13,7 +13,7 @@ typedef struct
 	volatile unsigned int LCKR;
 } GPIO_TypeDef;
 
-#define PERIPH_BASE           ((unsigned int)0x40000000)
+// #define PERIPH_BASE           ((unsigned int)0x40000000)
 #define APB2PERIPH_BASE       (PERIPH_BASE + 0x10000)
 #define GPIOA_BASE            (APB2PERIPH_BASE + 0x0800)
 #define GPIOD_BASE            (APB2PERIPH_BASE + 0x1400)
@@ -23,30 +23,33 @@ typedef struct
 #define LED_GREEN_TURN() (GPIOD->ODR ^= 1<<2)
 
 
-void main()
+int main()
 {
 	int i;
+	// uint32_t * jp;
 	// int count;
-	// IRQ_Init();
+	IRQ_Init();
 	Init_SysTickIRQ(9000, 1);
 	i = 3;
-	while(--i > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('f');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
-	IRQ_LOCK();
-	while(--i > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('g');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
+	// USART1_SEND(JMP_MAIN);
+
+	// while(--i > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('f');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
+	// IRQ_LOCK();
+	// while(--i > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('g');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 
 	// count = 3;
 	// while(count--) {
@@ -66,5 +69,6 @@ void main()
 		// USART1_SEND('\n');
 		// LED_GREEN_TURN();
 	}
+	return 0;
 }
 

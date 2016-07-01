@@ -11,7 +11,7 @@ typedef struct
 	volatile unsigned int BRR;
 	volatile unsigned int LCKR;
 } GPIO_TypeDef;
-#define PERIPH_BASE           ((unsigned int)0x40000000)
+// #define PERIPH_BASE           ((unsigned int)0x40000000)
 #define APB2PERIPH_BASE       (PERIPH_BASE + 0x10000)
 #define GPIOA_BASE            (APB2PERIPH_BASE + 0x0800)
 #define GPIOD_BASE            (APB2PERIPH_BASE + 0x1400)
@@ -203,7 +203,7 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 		while((USART1->SR&0X40)==0);
 		USART1_SEND('\n');
 	}
-	// IRQ_SetPriority(PMT_EXP_SYSTICK, PMT_IRQ_PRIORITY_1);
+	IRQ_SetPriority(PMT_EXP_SYSTICK, PMT_IRQ_PRIORITY_1);
 
 	count = 3;
 	while(--count > 0) {
@@ -214,7 +214,7 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 		while((USART1->SR&0X40)==0);
 		USART1_SEND('\n');
 	}
-	// *REG_SYSTICK_LOAD 	= Ticks - 1;
+	*REG_SYSTICK_LOAD 	= Ticks - 1;
 	count = 3;
 	while(--count > 0) {
 		while((USART1->SR&0X40)==0);
@@ -224,7 +224,7 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 		while((USART1->SR&0X40)==0);
 		USART1_SEND('\n');
 	}
-	// *REG_SYSTICK_VAL 	= 0;
+	*REG_SYSTICK_VAL 	= 0;
 	count = 3;
 	while(--count > 0) {
 		while((USART1->SR&0X40)==0);
@@ -234,9 +234,9 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 		while((USART1->SR&0X40)==0);
 		USART1_SEND('\n');
 	}
-	// *REG_SYSTICK_CTRL 	= PRM_SYSTICK_CTRL_CLKSRC_CORE | 
-	// 						PRM_SYSTICK_CTRL_TICKINT |
-	// 						PRM_SYSTICK_CTRL_ENABLE;
+	*REG_SYSTICK_CTRL 	= PRM_SYSTICK_CTRL_CLKSRC_CORE | 
+							PRM_SYSTICK_CTRL_TICKINT |
+							PRM_SYSTICK_CTRL_ENABLE;
 	count = 3;
 	while(--count > 0) {
 		while((USART1->SR&0X40)==0);
@@ -258,8 +258,8 @@ volatile int32_t Init_IRQGroup(uint32_t GroupLimit)
 void IRQ_Init(void)
 {
 
-	int i;
-	int count;
+	// int i;
+	// int count;
 	IRQ_PriorityRegList[0] = 0;
 	IRQ_PriorityRegList[1] = 0; 
 	IRQ_PriorityRegList[2] = 0; 
@@ -281,14 +281,14 @@ void IRQ_Init(void)
 	*REG_ICSR |= MSK_PENDSV_CLRPEND;
 	// IRQ_ClrPend(PMT_EXP_SYSTICK);
 	// IRQ_ClrPend(PMT_EXP_PEND_SV);
-	// *REG_IRQ_VTOR = VTOR_RAM | WAN_VTOR_ADDRESS;
+	*REG_IRQ_VTOR = VTOR_RAM | WAN_VTOR_ADDRESS;
 	// count = 3;
 	// while(count--) {
 	// 	for(i = 0; i < 5000000; i++) {
 	// 	}
 	// 	LED_RED_TURN();
 	// }
-	IRQ_UNLOCK(); // we have ever locked IRQ in 'wan-kernel.s'
+	// IRQ_UNLOCK(); // we have ever locked IRQ in 'wan-kernel.s'
 }
 
 volatile int32_t IRQ_SetPriority(uint32_t IRQ_Number, uint8_t Priority)
