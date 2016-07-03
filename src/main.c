@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "stm32f10x_usart.h"
 
+
 typedef struct
 { 
 	volatile unsigned int CRL; 
@@ -22,6 +23,7 @@ typedef struct
 #define LED_RED_TURN() 	(GPIOA->ODR ^= 1<<8)
 #define LED_GREEN_TURN() (GPIOD->ODR ^= 1<<2)
 
+unsigned char global_count=0;
 
 int main()
 {
@@ -30,6 +32,7 @@ int main()
 	// int count;
 	IRQ_Init();
 	Init_SysTickIRQ(9000, 1);
+	IRQ_UNLOCK();
 	i = 3;
 	// USART1_SEND(JMP_MAIN);
 
@@ -60,14 +63,22 @@ int main()
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
-		LED_RED_TURN();
+		// LED_RED_TURN();
+		global_count++;
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND(global_count);
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\r');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\n');
+		// printf("global_count=%d\r\n", global_count);
 		// while((USART1->SR&0X40)==0);
 		// USART1_SEND('a');
 		// while((USART1->SR&0X40)==0);
 		// USART1_SEND('\r');
 		// while((USART1->SR&0X40)==0);
 		// USART1_SEND('\n');
-		// LED_GREEN_TURN();
+		LED_GREEN_TURN();
 	}
 	return 0;
 }

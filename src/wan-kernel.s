@@ -1,4 +1,4 @@
-.EQU 	MSP_TOP,			0x20010000              
+.EQU 	MSP_TOP,			0x20008000              
 .EQU 	CLRPEND0,  			0xE000E280
 
 .EQU 	_RAM_ADDR, 		0x20000000

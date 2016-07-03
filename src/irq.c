@@ -60,6 +60,7 @@ typedef struct
 #define PMT_IRQ_NUM 				16
 
 static uint32_t * IRQ_PriorityRegList[16];
+extern unsigned char global_count;
 
 #define PMT_IRQ_PRIORITY_0 			0x00
 #define PMT_IRQ_PRIORITY_1 			0x10
@@ -90,51 +91,87 @@ void IRQ_Nmi()
 	while(1);
 }
 
+
+#define HFSR ((char *)0xE000ED2C)
+#define MFSR ((char *)0xE000ED28)
+#define BFSR ((char *)0xE000ED29)
+#define UFSR ((char *)0xE000ED2A)
+
 void IRQ_HardFault(void)
 {
+	int i;
 	while(1) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('H');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
+		for(i = 0; i < 5000000; i++) {
+		}
+		LED_RED_TURN();
 	}
+	// while(1) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('H');
+	// 	// while((USART1->SR&0X40)==0);
+	// 	// USART1_SEND(':');
+	// 	// while((USART1->SR&0X40)==0);
+	// 	// USART1_SEND(*HFSR);
+	// 	// while((USART1->SR&0X40)==0);
+	// 	// USART1_SEND(*(HFSR+1));
+	// 	// while((USART1->SR&0X40)==0);
+	// 	// USART1_SEND(*(HFSR+2));
+	// 	// while((USART1->SR&0X40)==0);
+	// 	// USART1_SEND(*(HFSR+3));
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 }
 
 void IRQ_MemManage(void)
 {
 	while(1) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('M');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('M');
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(':');
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(*MFSR);
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\r');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\n');
 	}
 }
 
 void IRQ_BusFault(void)
 {
 	while(1) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('B');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('B');
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(':');
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(*BFSR);
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\r');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\n');
 	}
 }
 
 void IRQ_UsageFault(void)
 {
 	while(1) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('U');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('U');
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(':');
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(*UFSR);
+		// // while((USART1->SR&0X40)==0);
+		// // USART1_SEND(*(UFSR+1));
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\r');
+		// while((USART1->SR&0X40)==0);
+		// USART1_SEND('\n');
 	}
 }
 
@@ -172,12 +209,10 @@ void IRQ_PendSV(void)
 
 void IRQ_SysTick(void)
 {
-	static uint32_t count = 0;
-	if(++count < 100) {
-		return;
+	if(global_count > 10) {
+		LED_RED_TURN();
+		global_count = 0;
 	}
-	count = 0;
-	LED_GREEN_TURN();
 }
 
 #define PRM_MAX_TICKS 	0xFFFFFF
@@ -195,57 +230,57 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 		return -1;
 	}
 	count = 3;
-	while(--count > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('a');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
+	// while(--count > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('a');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 	IRQ_SetPriority(PMT_EXP_SYSTICK, PMT_IRQ_PRIORITY_1);
 
 	count = 3;
-	while(--count > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('b');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
+	// while(--count > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('b');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 	*REG_SYSTICK_LOAD 	= Ticks - 1;
 	count = 3;
-	while(--count > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('c');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
+	// while(--count > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('c');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 	*REG_SYSTICK_VAL 	= 0;
 	count = 3;
-	while(--count > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('d');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
+	// while(--count > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('d');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 	*REG_SYSTICK_CTRL 	= PRM_SYSTICK_CTRL_CLKSRC_CORE | 
 							PRM_SYSTICK_CTRL_TICKINT |
 							PRM_SYSTICK_CTRL_ENABLE;
 	count = 3;
-	while(--count > 0) {
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('e');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\r');
-		while((USART1->SR&0X40)==0);
-		USART1_SEND('\n');
-	}
+	// while(--count > 0) {
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('e');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\r');
+	// 	while((USART1->SR&0X40)==0);
+	// 	USART1_SEND('\n');
+	// }
 	return 0;
 }
 
