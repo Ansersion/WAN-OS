@@ -1,9 +1,5 @@
-.EQU 	MSP_TOP,			0x20008000              
-.EQU 	CLRPEND0,  			0xE000E280
-
+.EQU 	MSP_TOP,		0x20008000              
 .EQU 	_RAM_ADDR, 		0x20000000
-.EQU 		_wan_ram, 	0x20008000
-.EQU 		_max_ram, 	0x20010000
 
 .text
 .global 	_start, JMP_MAIN

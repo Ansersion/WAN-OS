@@ -28,56 +28,14 @@ unsigned char global_count=0;
 int main()
 {
 	int i;
-	// uint32_t * jp;
-	// int count;
 	IRQ_Init();
 	Init_SysTickIRQ(9000, 1);
 	IRQ_UNLOCK();
 	i = 3;
-	// USART1_SEND(JMP_MAIN);
-
-	// while(--i > 0) {
-	// 	while((USART1->SR&0X40)==0);
-	// 	USART1_SEND('f');
-	// 	while((USART1->SR&0X40)==0);
-	// 	USART1_SEND('\r');
-	// 	while((USART1->SR&0X40)==0);
-	// 	USART1_SEND('\n');
-	// }
-	// IRQ_LOCK();
-	// while(--i > 0) {
-	// 	while((USART1->SR&0X40)==0);
-	// 	USART1_SEND('g');
-	// 	while((USART1->SR&0X40)==0);
-	// 	USART1_SEND('\r');
-	// 	while((USART1->SR&0X40)==0);
-	// 	USART1_SEND('\n');
-	// }
-
-	// count = 3;
-	// while(count--) {
-	// 	for(i = 0; i < 5000000; i++) {
-	// 	}
-	// 	LED_RED_TURN();
-	// }
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
-		// LED_RED_TURN();
 		global_count++;
-		// while((USART1->SR&0X40)==0);
-		// USART1_SEND(global_count);
-		// while((USART1->SR&0X40)==0);
-		// USART1_SEND('\r');
-		// while((USART1->SR&0X40)==0);
-		// USART1_SEND('\n');
-		// printf("global_count=%d\r\n", global_count);
-		// while((USART1->SR&0X40)==0);
-		// USART1_SEND('a');
-		// while((USART1->SR&0X40)==0);
-		// USART1_SEND('\r');
-		// while((USART1->SR&0X40)==0);
-		// USART1_SEND('\n');
 		LED_GREEN_TURN();
 	}
 	return 0;

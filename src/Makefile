@@ -12,7 +12,7 @@ OBJCOPY=$(PREFIX)-objcopy
 OBJDUMP=$(PREFIX)-objdump
 
 CFLAGS 	=
-CFLAGS 	+=-g -T sct.ld -Wall -c -mcpu=cortex-m3 -mthumb -nostartfiles 
+CFLAGS 	+=-g -T sct.ld -Wall -c -mcpu=cortex-m3 -mthumb -nostartfiles -I.
 
 C_SRC 	=
 A_SRC 	=
