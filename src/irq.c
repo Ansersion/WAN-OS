@@ -1,5 +1,9 @@
 #include "irq.h"
 #include "stm32f10x_usart.h"
+#include "core_cm3.h"
+#include "schedule.h"
+
+#include <string.h>
 
 typedef struct
 { 
@@ -59,7 +63,7 @@ typedef struct
 
 #define PMT_IRQ_NUM 				16
 
-static uint32_t * IRQ_PriorityRegList[16];
+// static uint32_t * IRQ_PriorityRegList[16];
 extern unsigned char global_count;
 
 #define PMT_IRQ_PRIORITY_0 			0x00
@@ -155,6 +159,19 @@ void IRQ_NULL_13(void)
 
 void IRQ_PendSV(void)
 {
+	uint32_t psp;
+	TaskTCB  * task_now;
+	TaskRegList * task_now_regs;
+	psp = __get_PSP();
+	psp -= sizeof(TaskRegList);
+	task_now = Schd_GetTaskTCBNow();
+	memcpy((void *)(task_now->Regs), (void *)psp, sizeof(TaskRegList));
+	task_now = Schd_GetTaskTCBNext();
+	Schd_SetTaskTCBNow(task_now);
+	__set_PSP((uint32_t)(task_now->Regs));
+	__asm volatile("MSR PSP, R0; \
+			ORR 	LR, LR, #0x04; \ 
+			");
 }
 
 void IRQ_SysTick(void)
@@ -162,6 +179,7 @@ void IRQ_SysTick(void)
 	if(global_count > 10) {
 		LED_RED_TURN();
 		global_count = 0;
+		TriggerPendSV();
 	}
 }
 
@@ -175,17 +193,12 @@ void IRQ_SysTick(void)
 #define PRM_SYSTICK_CTRL_ENABLE 		0x00000001 /* Flag of enabling systick to time */
 volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 {
-	// int count;
 	if(Ticks > PRM_MAX_TICKS) {
 		return -1;
 	}
-	IRQ_SetPriority(PMT_EXP_SYSTICK, PMT_IRQ_PRIORITY_1);
 
-	*REG_SYSTICK_LOAD 	= Ticks - 1;
-	*REG_SYSTICK_VAL 	= 0;
-	*REG_SYSTICK_CTRL 	= PRM_SYSTICK_CTRL_CLKSRC_CORE | 
-							PRM_SYSTICK_CTRL_TICKINT |
-							PRM_SYSTICK_CTRL_ENABLE;
+	SysTick_Config(Ticks);
+
 	return 0;
 }
 
@@ -198,37 +211,31 @@ volatile int32_t Init_IRQGroup(uint32_t GroupLimit)
 void IRQ_Init(void)
 {
 
-	IRQ_PriorityRegList[0] = 0;
-	IRQ_PriorityRegList[1] = 0; 
-	IRQ_PriorityRegList[2] = 0; 
-	IRQ_PriorityRegList[3] = 0; 
-	IRQ_PriorityRegList[4] = REG_EXP_PRI_MEM; 
-	IRQ_PriorityRegList[5] = REG_EXP_PRI_BUS; 
-	IRQ_PriorityRegList[6] = REG_EXP_PRI_USAGE; 
-	IRQ_PriorityRegList[7] = REG_EXP_PRI_NULL_7; 
-	IRQ_PriorityRegList[8] = REG_EXP_PRI_NULL_8; 
-	IRQ_PriorityRegList[9] = REG_EXP_PRI_NULL_9; 
-	IRQ_PriorityRegList[10] = REG_EXP_PRI_NULL_10;
-	IRQ_PriorityRegList[11] = REG_EXP_PRI_SVC; 
-	IRQ_PriorityRegList[12] = REG_EXP_PRI_DEBUG; 
-	IRQ_PriorityRegList[13] = REG_EXP_PRI_NULL_13;
-	IRQ_PriorityRegList[14] = REG_EXP_PRI_PEND_SV;
-	IRQ_PriorityRegList[15] = REG_EXP_PRI_SYSTICK;
-	*REG_SYSTICK_CTRL = 0;
-	*REG_ICSR |= MSK_SYSTICK_CLRPEND;
-	*REG_ICSR |= MSK_PENDSV_CLRPEND;
-	*REG_IRQ_VTOR = VTOR_RAM | WAN_VTOR_ADDRESS;
-}
+	/* Reset and disable all interrupts */
+	// IRQ_PriorityRegList[0] = 0;
+	// IRQ_PriorityRegList[1] = 0; 
+	// IRQ_PriorityRegList[2] = 0; 
+	// IRQ_PriorityRegList[3] = 0; 
+	// IRQ_PriorityRegList[4] = REG_EXP_PRI_MEM; 
+	// IRQ_PriorityRegList[5] = REG_EXP_PRI_BUS; 
+	// IRQ_PriorityRegList[6] = REG_EXP_PRI_USAGE; 
+	// IRQ_PriorityRegList[7] = REG_EXP_PRI_NULL_7; 
+	// IRQ_PriorityRegList[8] = REG_EXP_PRI_NULL_8; 
+	// IRQ_PriorityRegList[9] = REG_EXP_PRI_NULL_9; 
+	// IRQ_PriorityRegList[10] = REG_EXP_PRI_NULL_10;
+	// IRQ_PriorityRegList[11] = REG_EXP_PRI_SVC; 
+	// IRQ_PriorityRegList[12] = REG_EXP_PRI_DEBUG; 
+	// IRQ_PriorityRegList[13] = REG_EXP_PRI_NULL_13;
+	// IRQ_PriorityRegList[14] = REG_EXP_PRI_PEND_SV;
+	// IRQ_PriorityRegList[15] = REG_EXP_PRI_SYSTICK;
+	SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
+	SCB->ICSR |= SCB_ICSR_PENDSTCLR_Msk;
+	SCB->ICSR |= SCB_ICSR_PENDSVCLR_Msk;
 
-volatile int32_t IRQ_SetPriority(uint32_t IRQ_Number, uint8_t Priority)
-{
-	// /* */
-	// if(IRQ_Number < 4 || IRQ_Number > 68) {
-	// 	return -1;
-	// }
-	// *IRQ_PriorityRegList[IRQ_Number] = Priority;
-	// NVIC_SetPriority();
-	return 0;
+	/* Reallocate interrupte table */
+	SCB->VTOR = VTOR_RAM | WAN_VTOR_OFFSET;
+	/* We have ever locked IRQ in wan-kernel.s */
+	IRQ_UNLOCK();
 }
 
 volatile int32_t IRQ_Enalbe(uint32_t IRQ_Number)
@@ -260,4 +267,6 @@ volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number)
 	}
 	return 0;
 }
+
+
 

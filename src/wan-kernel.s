@@ -7,7 +7,7 @@
 .syntax 	unified
 
 _start:
-				CPSID	I
+				CPSID	I 	@ IRQ_LOCK
 				ldr 	r0, =MSP_TOP
 				msr		msp,	r0
 				mov 	r0, #0

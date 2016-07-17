@@ -23,10 +23,6 @@
 
 #include <stdint.h>
 
-/* Ansersion add */
-#include <core_cm3.h>
-/* Ansersion add end*/
-
 /* define compiler specific symbols */
 #if defined ( __CC_ARM   )
   #define __ASM            __asm                                      /*!< asm keyword for ARM Compiler          */

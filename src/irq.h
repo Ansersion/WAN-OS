@@ -2,24 +2,7 @@
 #define IRQ_H
 
 #include <stdint.h>
-
-#ifdef __KEIL__
-#define IRQ_Reset 	Reset_Handler     
-#define IRQ_Nmi 	NMI_Handler       
-#define IRQ_HardFault 	HardFault_Handler 
-#define IRQ_MemManage 	MemManage_Handler 
-#define IRQ_BusFault 	BusFault_Handler  
-#define IRQ_UsageFault 	UsageFault_Handler
-// #define IRQ_NULL_7 	Reserved_Handler                 
-// #define IRQ_NULL_8 	Reserved_Handler              
-// #define IRQ_NULL_9 	Reserved_Handler                 
-// #define IRQ_NULL_10 	Reserved_Handler                 
-#define IRQ_SVC 	SVC_Handler       
-#define IRQ_DebugMon	DebugMon_Handler  
-// #define IRQ_NULL_13	Reserved_Handler                 
-#define IRQ_PendSV	PendSV_Handler    
-#define IRQ_SysTick	SysTick_Handler   
-#endif
+#include "core_cm3.h"
 
 /*****Register of IRQ Vectors Offset***
  */
@@ -63,7 +46,7 @@
 #define REG_CLRPEND7 	((uint32_t *)0xE000E29C)
 
 #define WAN_OS_RAM 	((uint32_t)0x20004000)
-#define WAN_VTOR_ADDRESS 	((uint32_t)0x00000200)
+#define WAN_VTOR_OFFSET ((uint32_t)0x00000200)
 #define VTOR_RAM 	((uint32_t)0x20000000)
 #define VTOR_R0M 	((uint32_t)0x00000000)
 #define REG_ICSR 	((uint32_t *)0xE000ED04)
@@ -76,7 +59,6 @@
 volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority);
 volatile int32_t Init_IRQGroup(uint32_t GroupLimit);
 void IRQ_Init(void);
-volatile int32_t IRQ_SetPriority(uint32_t IRQ_Number, uint8_t Priority);
 volatile int32_t IRQ_Enalbe(uint32_t IRQ_Number);
 volatile int32_t IRQ_Disable(uint32_t IRQ_Number);
 volatile int32_t IRQ_SetPend(uint32_t IRQ_Number);
@@ -102,5 +84,10 @@ void IRQ_SysTick(void);
 
 void IRQ_LOCK(void); // asm function(asm_tool.s)
 void IRQ_UNLOCK(void); // asm function(asm_tool.s)
+
+__attribute__( ( always_inline ) ) static inline void TriggerPendSV(void)
+{
+	SCB->ICSR |= SCB_ICSR_PENDSTSET_Msk;
+}
 
 #endif
