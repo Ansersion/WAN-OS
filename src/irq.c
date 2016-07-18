@@ -157,23 +157,6 @@ void IRQ_NULL_13(void)
 {
 }
 
-void IRQ_PendSV(void)
-{
-	uint32_t psp;
-	TaskTCB  * task_now;
-	TaskRegList * task_now_regs;
-	psp = __get_PSP();
-	psp -= sizeof(TaskRegList);
-	task_now = Schd_GetTaskTCBNow();
-	memcpy((void *)(task_now->Regs), (void *)psp, sizeof(TaskRegList));
-	task_now = Schd_GetTaskTCBNext();
-	Schd_SetTaskTCBNow(task_now);
-	__set_PSP((uint32_t)(task_now->Regs));
-	__asm volatile("MSR PSP, R0; \
-			ORR 	LR, LR, #0x04; \ 
-			");
-}
-
 void IRQ_SysTick(void)
 {
 	if(global_count > 10) {
@@ -268,5 +251,11 @@ volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number)
 	return 0;
 }
 
-
+void IRQ_PendSV_C(void)
+{
+	Schd_TaskTCB  * task_next;
+	task_next = Schd_GetTaskTCBNext();
+	Schd_SetTaskTCBCurrent(task_next);
+	__set_PSP((uint32_t)(task_next->Stk));
+}
 

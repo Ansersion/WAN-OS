@@ -1,18 +1,19 @@
+#ifndef SCHEDULE_H
+#define SCHEDULE_H
+
 #include <stdint.h>
 
-typedef struct TaskRegList {
-	uint32_t PSR;
-	uint32_t PC;
-	uint32_t LR;
-	uint32_t R12;
-	uint32_t R3;
-	uint32_t R2;
-	uint32_t R1;
-	uint32_t R0;
-} TaskRegList;
+typedef uint8_t Schd_TaskStk;
 
-typedef struct TaskTCB {
-	TaskRegList * Regs;
+typedef struct Schd_TaskRegList {
+	// uint32_t PSR;
+	// uint32_t PC;
+	// uint32_t LR;
+	// uint32_t R12;
+	// uint32_t R3;
+	// uint32_t R2;
+	// uint32_t R1;
+	// uint32_t R0;
 	uint32_t R11;
 	uint32_t R10;
 	uint32_t R9;
@@ -21,9 +22,20 @@ typedef struct TaskTCB {
 	uint32_t R6;
 	uint32_t R5;
 	uint32_t R4;
-} TaskTCB;
+} Schd_TaskRegList;
 
-TaskTCB * Schd_GetTaskTCBNow();
-TaskTCB * Schd_GetTaskTCBNext();
-void Schd_SetTaskTCBNow(TaskTCB * task_tcb);
-void Schd_SetTaskTCBNext(TaskTCB * task_tcb);
+typedef struct Schd_TaskTCB {
+	Schd_TaskStk * Stk;
+	Schd_TaskRegList * RegList;
+} Schd_TaskTCB;
+
+Schd_TaskTCB * Schd_GetTaskTCBCurrent();
+Schd_TaskTCB * Schd_GetTaskTCBNext();
+void Schd_SetTaskTCBCurrent(Schd_TaskTCB * task_tcb);
+void Schd_SetTaskTCBNext(Schd_TaskTCB * task_tcb);
+
+__attribute__( ( always_inline ) ) static inline void Schd_SaveRegs(void)
+{
+}
+
+#endif

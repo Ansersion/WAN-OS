@@ -79,11 +79,12 @@ void IRQ_NULL_10(void);
 void IRQ_SVC(void);
 void IRQ_DebugMon(void);
 void IRQ_NULL_13(void);
-void IRQ_PendSV(void);
+void IRQ_PendSV(void); // asm function(irq.s)
 void IRQ_SysTick(void);
 
 void IRQ_LOCK(void); // asm function(asm_tool.s)
 void IRQ_UNLOCK(void); // asm function(asm_tool.s)
+void IRQ_PendSV_C(void);
 
 __attribute__( ( always_inline ) ) static inline void TriggerPendSV(void)
 {
