@@ -7,6 +7,8 @@
 .syntax 	unified
 
 _start:
+				@ Stack has been destroyed, so
+				@ invoking IRQ_LOCK is dangerous
 				CPSID	I 	@ IRQ_LOCK
 				ldr 	r0, =MSP_TOP
 				msr		msp,	r0

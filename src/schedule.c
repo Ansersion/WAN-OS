@@ -1,24 +1,78 @@
-#include "schedule.h"
+#include <stdio.h>
+#include <irq.h>
+#include <schedule.h>
+#include <core_header.h>
 
-Schd_TaskTCB * TaskCurrent;
-Schd_TaskTCB * TaskNext;
+static TaskTCB * TaskList[MAX_TASK_NUM];
 
-Schd_TaskTCB * Schd_GetTaskTCBCurrent()
+static TaskTCB * TaskNow;
+static TaskTCB * TaskNext;
+
+int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb)
 {
-	return TaskCurrent;
+	TASK_STK * stk_top;
+	int i;
+	if(NULL == Tcb) {
+		return -1;
+	}
+	if(Tcb->StkSize < MIN_STK_SIZE) {
+		return -2;
+	}
+	stk_top = Tcb->StkTopPtr + Tcb->StkSize / sizeof(TASK_STK);
+	*(--stk_top) = (TASK_STK)0x01000000L;       // PSR
+	*(--stk_top) = (TASK_STK)Task;              // Task Entry
+	*(--stk_top)  = (TASK_STK)0xFFFFFFFEL;      // R14 (LR) 
+	*(--stk_top)  = (TASK_STK)0x12121212L;      // R12
+	*(--stk_top)  = (TASK_STK)0x03030303L;      // R3
+	*(--stk_top)  = (TASK_STK)0x02020202L;      // R2
+	*(--stk_top)  = (TASK_STK)0x01010101L;      // R1
+	*(--stk_top)  = (TASK_STK)Arg;              // R0
+	*(--stk_top)  = (TASK_STK)0x11111111L;      // R11
+	*(--stk_top)  = (TASK_STK)0x10101010L;      // R10
+	*(--stk_top)  = (TASK_STK)0x09090909L;      // R9
+	*(--stk_top)  = (TASK_STK)0x08080808L;      // R8
+	*(--stk_top)  = (TASK_STK)0x07070707L;      // R7
+	*(--stk_top)  = (TASK_STK)0x06060606L;      // R6
+	*(--stk_top)  = (TASK_STK)0x05050505L;      // R5
+	*(--stk_top)  = (TASK_STK)0x04040404L;      // R4
+
+	Tcb->StkTopPtr = stk_top;
+	for(i = 0; i < MAX_TASK_NUM; i++) {
+		if(NULL == TaskList[i]) {
+			TaskList[i] = Tcb;
+			return 0;
+		}
+	}
+
+	/* There are 'MAX_TASK_NUM' tasks running.
+	So creating task failed.
+	   */
+	return -3;
 }
 
-Schd_TaskTCB * Schd_GetTaskTCBNext()
+void Schd_TaskCtxSw()
+{
+	IRQ_LOCK();
+	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+	IRQ_UNLOCK();
+}
+
+TaskTCB * Schd_GetTaskTCBNow()
+{
+	return TaskNow;
+}
+
+TaskTCB * Schd_GetTaskTCBNext()
 {
 	return TaskNext;
 }
 
-void Schd_SetTaskTCBCurrent(Schd_TaskTCB * task_tcb)
+void Schd_SetTaskTCBNow(TaskTCB * task_tcb)
 {
-	TaskCurrent = task_tcb;
+	TaskNow = task_tcb;
 }
 
-void Schd_SetTaskTCBNext(Schd_TaskTCB * task_tcb)
+void Schd_SetTaskTCBNext(TaskTCB * task_tcb)
 {
 	TaskNext = task_tcb;
 }

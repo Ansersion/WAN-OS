@@ -24,8 +24,6 @@
  #pragma system_include  /* treat file as system include file for MISRA check */
 #endif
 
-#include <ARMCM3.h>
-
 #ifdef __cplusplus
  extern "C" {
 #endif

@@ -3,39 +3,49 @@
 
 #include <stdint.h>
 
-typedef uint8_t Schd_TaskStk;
+#define MIN_STK_SIZE 	 	128
+#define MAX_TASK_NUM 		16
+// #define TASK_STK_SIZE_DEF 	64
 
-typedef struct Schd_TaskRegList {
-	// uint32_t PSR;
-	// uint32_t PC;
-	// uint32_t LR;
-	// uint32_t R12;
-	// uint32_t R3;
-	// uint32_t R2;
-	// uint32_t R1;
-	// uint32_t R0;
-	uint32_t R11;
-	uint32_t R10;
-	uint32_t R9;
-	uint32_t R8;
-	uint32_t R7;
-	uint32_t R6;
-	uint32_t R5;
-	uint32_t R4;
-} Schd_TaskRegList;
+/* consistent with register size */
+#define TASK_STK 	uint32_t
 
-typedef struct Schd_TaskTCB {
-	Schd_TaskStk * Stk;
-	Schd_TaskRegList * RegList;
-} Schd_TaskTCB;
+typedef void * (*TaskType)(void *);
 
-Schd_TaskTCB * Schd_GetTaskTCBCurrent();
-Schd_TaskTCB * Schd_GetTaskTCBNext();
-void Schd_SetTaskTCBCurrent(Schd_TaskTCB * task_tcb);
-void Schd_SetTaskTCBNext(Schd_TaskTCB * task_tcb);
+typedef struct TaskRegList {
+} TaskRegList;
 
-__attribute__( ( always_inline ) ) static inline void Schd_SaveRegs(void)
-{
-}
+typedef struct TaskTCB {
+	TASK_STK * 	StkTopPtr;
+	uint32_t  	StkSize;
+	/* Stack contents list as following(from top to bottom) */
+	/*
+	uint32_t r4;
+	uint32_t r5;
+	uint32_t r6;
+	uint32_t r7;
+	uint32_t r8;
+	uint32_t r9;
+	uint32_t r10;
+	uint32_t r11;
+	uint32_t r0;
+	uint32_t r1;
+	uint32_t r2;
+	uint32_t r3;
+	uint32_t r12;
+	uint32_t lr;
+	uint32_t pc;
+	uint32_t psr;
+	*/
+	uint8_t 	TaskState;
+} TaskTCB;
+
+int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb);
+void Schd_TaskCtxSw();
+
+TaskTCB * Schd_GetTaskTCBNow();
+TaskTCB * Schd_GetTaskTCBNext();
+void Schd_SetTaskTCBNow(TaskTCB * task_tcb);
+void Schd_SetTaskTCBNext(TaskTCB * task_tcb);
 
 #endif
