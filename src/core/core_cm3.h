@@ -59,7 +59,7 @@
                                     __CM3_CMSIS_VERSION_SUB          )     /*!< CMSIS HAL version number         */
 
 #define __CORTEX_M                (0x03)                                   /*!< Cortex-M Core                    */
-IRQn_Type IRQn_x;
+// IRQn_Type IRQn_x;
 
 
 #if   defined ( __CC_ARM )

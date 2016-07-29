@@ -1,10 +1,14 @@
-#include "irq.h"
+#include <irq.h>
 #include <stdio.h>
-#include "stm32f10x_usart.h"
+// #include "stm32f10x_usart.h"
 #include <schedule.h>
 #include <init.h>
+#include <stm32f10x.h>
+#include <stm32f10x_gpio.h>
+#include <stm32f10x_rcc.h>
 
 
+/*
 typedef struct
 { 
 	volatile unsigned int CRL; 
@@ -15,13 +19,15 @@ typedef struct
 	volatile unsigned int BRR;
 	volatile unsigned int LCKR;
 } GPIO_TypeDef;
+*/
 
-// #define PERIPH_BASE           ((unsigned int)0x40000000)
+/* #define PERIPH_BASE           ((unsigned int)0x40000000)
 #define APB2PERIPH_BASE       (PERIPH_BASE + 0x10000)
 #define GPIOA_BASE            (APB2PERIPH_BASE + 0x0800)
 #define GPIOD_BASE            (APB2PERIPH_BASE + 0x1400)
 #define GPIOA 			((GPIO_TypeDef *) GPIOA_BASE)
 #define GPIOD 			((GPIO_TypeDef *) GPIOD_BASE)
+*/
 #define LED_RED_TURN() 	(GPIOA->ODR ^= 1<<8)
 #define LED_GREEN_TURN() (GPIOD->ODR ^= 1<<2)
 
@@ -40,7 +46,9 @@ unsigned char global_count=0;
 int main()
 {
 	int i;
-
+	GPIO_InitTypeDef GPIO_InitType;
+	GPIO_TypeDef * GPIO_Type;
+	
 	Schd_Init();
 	TaskRedTcb.StkTopPtr = TaskRedStk;
 	TaskGreenTcb.StkTopPtr = TaskGreenStk;
@@ -48,20 +56,41 @@ int main()
 	TaskRedTcb.StkSize = 128;
 	TaskGreenTcb.StkSize = 128;
 
-	// Schd_CreateTask(TaskRed, NULL, &TaskRedTcb);
-	// Schd_CreateTask(TaskGreen, NULL, &TaskGreenTcb);
+	Schd_CreateTask(TaskRed, NULL, &TaskRedTcb);
+	Schd_CreateTask(TaskGreen, NULL, &TaskGreenTcb);
 
 	Schd_SetTaskTCBNow(&TaskGreenTcb);
 
 	IRQ_Init();
 	Init_SysTickIRQ(9000, 1);
-	// IRQ_UNLOCK();
+	NVIC_SetPriority(PendSV_IRQn, 0xf);
+		// Enable clock of GPIO-A and GPIO-D
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOD, ENABLE);
 	
-	// OSRun();
+	//Enable clock of CRC unit
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_CRC, ENABLE);
+	
+	// GPIO output initialization;
+	GPIO_InitType.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitType.GPIO_Speed = GPIO_Speed_50MHz;
+	
+	// Initialize PA.8
+	GPIO_Type = GPIOA;
+	GPIO_InitType.GPIO_Pin = GPIO_Pin_8;
+	GPIO_Init(GPIO_Type, &GPIO_InitType);
+	
+	// Initialize PD.2
+	GPIO_Type = GPIOD;
+	GPIO_InitType.GPIO_Pin = GPIO_Pin_2;
+	GPIO_Init(GPIO_Type, &GPIO_InitType);
+	
+	IRQ_UNLOCK();
+	
+	OSRun();
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
-		LED_GREEN_TURN();
+		// LED_GREEN_TURN();
 		// LED_RED_TURN();
 		/* never come here */
 	}
@@ -80,11 +109,21 @@ void * TaskRed(void * arg)
 {
 	int i;
 	while(1) {
-		for(i = 0; i < 250000; i++) {
+		for(i = 0; i < 1000000; i++) {
 		}
 		// GPIOA->ODR |= 1<<8;
-		GPIOD->ODR |= 1<<2;
-		// LED_RED_TURN();
+		// GPIOD->ODR |= 1<<2;
+		LED_RED_TURN();
+		/* LED_GREEN_TURN();
+		for(i = 0; i < 500000; i++) {
+		}
+		LED_GREEN_TURN();
+		for(i = 0; i < 250000; i++) {
+		}
+		LED_GREEN_TURN();
+		*/
+		// LED_GREEN_TURN();
+		
 	}
 }
 
@@ -94,8 +133,6 @@ void * TaskGreen(void * arg)
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
-		// GPIOA->ODR &= ~(1<<8);
-		GPIOD->ODR &= ~(1<<2);
-		// LED_GREEN_TURN();
+		LED_GREEN_TURN();
 	}
 }

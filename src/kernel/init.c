@@ -1,8 +1,13 @@
-#include "init.h"
-#include "stm32f10x_usart.h"
+#include <init.h>
+#include <stm32f10x_usart.h>
 #include <irq.h>
 #include <schedule.h>
-#include <core_header.h>
+
+#ifdef __GNUC__
+// #include <core_header.h>
+#else
+#include <stm32f10x.h>
+#endif
 
 int InitUsart(int baud_rate, 	int word_len, 	int stop_bit, 
               int parity,       int flow_ctrl,  uint32_t mode) 
@@ -68,10 +73,11 @@ int InitUsart(int baud_rate, 	int word_len, 	int stop_bit,
 	return 0;
 }
 
-void OSRun()
+void OSRun(void)
 {
+	TaskTCB * tmp;
 	IRQ_LOCK();
-	TaskTCB * tmp = Schd_GetTaskTCBNow();
+	tmp	= Schd_GetTaskTCBNow();
 	tmp->StkTopPtr += 8;
 	__set_PSP((uint32_t)(tmp->StkTopPtr));
 	// Schd_Schdule();

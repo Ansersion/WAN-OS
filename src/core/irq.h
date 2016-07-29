@@ -2,7 +2,10 @@
 #define IRQ_H
 
 #include <stdint.h>
-#include "core_header.h"
+
+#ifdef __GNUC__
+// #include <core_header.h>
+#endif
 
 /*****Register of IRQ Vectors Offset***
  */
@@ -53,6 +56,22 @@
 #define MSK_SYSTICK_CLRPEND 0x02000000
 #define MSK_PENDSV_CLRPEND 	0x08000000
 
+#define IRQ_Reset 	Reset_Handler
+#define IRQ_Nmi 	NMI_Handler
+#define IRQ_HardFault 	HardFault_Handler
+#define IRQ_MemManage 	MemManage_Handler
+#define IRQ_BusFault 	BusFault_Handler
+#define IRQ_UsageFault 	UsageFault_Handler
+#define IRQ_NULL_7 	NULL_7_Handler
+#define IRQ_NULL_8 	NULL_8_Handler
+#define IRQ_NULL_9 	NULL_9_Handler
+#define IRQ_NULL_10 	NULL_10_Handler
+#define IRQ_SVC 	SVC_Handler
+#define IRQ_DebugMon 	DebugMon_Handler
+#define IRQ_NULL_13 	NULL_13_Handler
+#define IRQ_PendSV 	PendSV_Handler
+#define IRQ_SysTick 	SysTick_Handler
+
 /* WARNING: Setup the interrupt of systick first, before
    using the function.
  */
@@ -66,7 +85,10 @@ volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number);
 
 typedef void (* IRQ_HANDLER)(void);
 
+#ifdef __GNUC__
 void IRQ_Reset(void);
+#endif
+
 void IRQ_Nmi(void);
 void IRQ_HardFault(void);
 void IRQ_MemManage(void);

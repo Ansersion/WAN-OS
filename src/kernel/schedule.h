@@ -12,9 +12,6 @@
 
 typedef void * (*TaskType)(void *);
 
-typedef struct TaskRegList {
-} TaskRegList;
-
 typedef struct TaskTCB {
 	TASK_STK * 	StkTopPtr;
 	uint32_t  	StkSize;
@@ -41,13 +38,13 @@ typedef struct TaskTCB {
 	uint8_t 	TaskState;
 } TaskTCB;
 
-int Schd_Init();
+int Schd_Init(void);
 int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb);
-void Schd_TaskCtxSw();
-TaskTCB * Schd_Schdule();
+void Schd_TaskCtxSw(void);
+TaskTCB * Schd_Schdule(void);
 
-TaskTCB * Schd_GetTaskTCBNow();
-TaskTCB * Schd_GetTaskTCBNext();
+TaskTCB * Schd_GetTaskTCBNow(void);
+TaskTCB * Schd_GetTaskTCBNext(void);
 void Schd_SetTaskTCBNow(TaskTCB * task_tcb);
 void Schd_SetTaskTCBNext(TaskTCB * task_tcb);
 

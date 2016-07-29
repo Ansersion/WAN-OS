@@ -1,12 +1,13 @@
-#include "irq.h"
-#include "stm32f10x_usart.h"
+#include <irq.h>
+#include <stm32f10x_usart.h>
 // #include "ARMCM3.h"
 // #include "core_cm3.h"
-#include "core_header.h"
+// #include <core_header.h>
 #include "schedule.h"
 
 #include <string.h>
 
+/*
 typedef struct
 { 
 	volatile unsigned int CRL; 
@@ -17,6 +18,7 @@ typedef struct
 	volatile unsigned int BRR;
 	volatile unsigned int LCKR;
 } GPIO_TypeDef;
+*/
 // #define PERIPH_BASE           ((unsigned int)0x40000000)
 #define APB2PERIPH_BASE       (PERIPH_BASE + 0x10000)
 #define GPIOA_BASE            (APB2PERIPH_BASE + 0x0800)
@@ -87,10 +89,12 @@ extern unsigned char global_count;
 
 extern void * _irq_vectors;
 
+#ifdef __GNUC__
 void IRQ_Reset()
 {
 	while(1);
 }
+#endif
 
 void IRQ_Nmi()
 {
@@ -109,7 +113,8 @@ void IRQ_HardFault(void)
 	while(1) {
 		for(i = 0; i < 5000000; i++) {
 		}
-		LED_RED_TURN();
+		// LED_RED_TURN();
+		// LED_GREEN_TURN();
 	}
 }
 
@@ -188,11 +193,11 @@ void IRQ_PendSV_C(void)
 void IRQ_SysTick(void)
 {
 	if(global_count++ > 10) {
-		// LED_RED_TURN();
+//		LED_RED_TURN();
 		// LED_GREEN_TURN();
 		global_count = 0;
 	}
-	// Schd_TaskCtxSw();
+	Schd_TaskCtxSw();
 }
 
 #define PRM_MAX_TICKS 	0xFFFFFF
@@ -208,7 +213,7 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 	if(Ticks > PRM_MAX_TICKS) {
 		return -1;
 	}
-
+	NVIC_SetPriority(SysTick_IRQn, 0x0); 
 	SysTick_Config(Ticks);
 
 	return 0;
@@ -244,10 +249,12 @@ void IRQ_Init(void)
 	SCB->ICSR |= SCB_ICSR_PENDSTCLR_Msk;
 	SCB->ICSR |= SCB_ICSR_PENDSVCLR_Msk;
 
+	#ifdef __GNUC__
 	/* Reallocate interrupte table */
 	SCB->VTOR = VTOR_RAM | WAN_VTOR_OFFSET;
 	/* We have ever locked IRQ in wan-kernel.s */
-	IRQ_UNLOCK();
+	#endif
+	// IRQ_UNLOCK();
 }
 
 volatile int32_t IRQ_Enalbe(uint32_t IRQ_Number)

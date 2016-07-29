@@ -1,14 +1,19 @@
 #include <stdio.h>
 #include <irq.h>
 #include <schedule.h>
-#include <core_header.h>
+
+#ifdef __GNUC__
+// #include <core_header.h>
+#else
+#include <stm32f10x.h>
+#endif
 
 static TaskTCB * TaskList[MAX_TASK_NUM];
 
 static TaskTCB * TaskNow;
 static TaskTCB * TaskNext;
 
-int Schd_Init()
+int Schd_Init(void)
 {
 	int i;
 	for(i = 0; i < MAX_TASK_NUM; i++) {
@@ -60,14 +65,14 @@ int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb)
 	return -3;
 }
 
-void Schd_TaskCtxSw()
+void Schd_TaskCtxSw(void)
 {
 	IRQ_LOCK();
 	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	IRQ_UNLOCK();
 }
 
-TaskTCB * Schd_Schdule()
+TaskTCB * Schd_Schdule(void)
 {
 	uint32_t i;
 	for(i = TaskNow->Pid + 1; i < MAX_TASK_NUM; i++) {
@@ -86,12 +91,12 @@ TaskTCB * Schd_Schdule()
 	return NULL;
 }
 
-TaskTCB * Schd_GetTaskTCBNow()
+TaskTCB * Schd_GetTaskTCBNow(void)
 {
 	return TaskNow;
 }
 
-TaskTCB * Schd_GetTaskTCBNext()
+TaskTCB * Schd_GetTaskTCBNext(void)
 {
 	return TaskNext;
 }

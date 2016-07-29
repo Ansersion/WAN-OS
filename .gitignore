@@ -10,3 +10,5 @@ cscope*
 *.lst
 *.map
 *.axf
+src/keil_project
+src/keil_project/
