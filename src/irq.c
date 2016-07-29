@@ -164,8 +164,10 @@ void IRQ_PendSV_C(void)
 {
 	TaskTCB * tsk;
 	tsk = Schd_GetTaskTCBNow();
-	tsk->StkTopPtr = (uint8_t *)__get_PSP();
+	tsk->StkTopPtr = (uint32_t *)__get_PSP();
+	Schd_Schdule();
 	tsk = Schd_GetTaskTCBNext();
+	Schd_SetTaskTCBNow(tsk);
 	__set_PSP((uint32_t)(tsk->StkTopPtr));
 }
 // void IRQ_PendSV(void)
@@ -185,11 +187,12 @@ void IRQ_PendSV_C(void)
 
 void IRQ_SysTick(void)
 {
-	if(global_count > 10) {
-		LED_RED_TURN();
+	if(global_count++ > 10) {
+		// LED_RED_TURN();
+		// LED_GREEN_TURN();
 		global_count = 0;
-		TriggerPendSV();
 	}
+	// Schd_TaskCtxSw();
 }
 
 #define PRM_MAX_TICKS 	0xFFFFFF
@@ -276,6 +279,4 @@ volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number)
 	}
 	return 0;
 }
-
-
 

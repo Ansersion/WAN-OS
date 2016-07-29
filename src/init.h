@@ -25,5 +25,6 @@
 
 int InitUsart(int baud_rate, 	int word_len, 	int stop_bit, 
               int parity,       int flow_ctrl,  uint32_t mode);
+void OSRun();
 
 #endif

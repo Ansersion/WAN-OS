@@ -85,9 +85,9 @@ void IRQ_SysTick(void);
 void IRQ_LOCK(void); // asm function(asm_tool.s)
 void IRQ_UNLOCK(void); // asm function(asm_tool.s)
 
-__attribute__( ( always_inline ) ) static inline void TriggerPendSV(void)
-{
-	SCB->ICSR |= SCB_ICSR_PENDSTSET_Msk;
-}
+// __attribute__( ( always_inline ) ) static inline void TriggerPendSV(void)
+// {
+// 	SCB->ICSR |= SCB_ICSR_PENDSTSET_Msk;
+// }
 
 #endif

@@ -37,11 +37,14 @@ typedef struct TaskTCB {
 	uint32_t pc;
 	uint32_t psr;
 	*/
+	uint32_t 	Pid;
 	uint8_t 	TaskState;
 } TaskTCB;
 
+int Schd_Init();
 int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb);
 void Schd_TaskCtxSw();
+TaskTCB * Schd_Schdule();
 
 TaskTCB * Schd_GetTaskTCBNow();
 TaskTCB * Schd_GetTaskTCBNext();

@@ -8,6 +8,15 @@ static TaskTCB * TaskList[MAX_TASK_NUM];
 static TaskTCB * TaskNow;
 static TaskTCB * TaskNext;
 
+int Schd_Init()
+{
+	int i;
+	for(i = 0; i < MAX_TASK_NUM; i++) {
+		TaskList[i] = NULL;
+	}
+	return 0;
+}
+
 int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb)
 {
 	TASK_STK * stk_top;
@@ -40,6 +49,7 @@ int Schd_CreateTask(TaskType Task, void * Arg, TaskTCB * Tcb)
 	for(i = 0; i < MAX_TASK_NUM; i++) {
 		if(NULL == TaskList[i]) {
 			TaskList[i] = Tcb;
+			TaskList[i]->Pid = i;
 			return 0;
 		}
 	}
@@ -55,6 +65,25 @@ void Schd_TaskCtxSw()
 	IRQ_LOCK();
 	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	IRQ_UNLOCK();
+}
+
+TaskTCB * Schd_Schdule()
+{
+	uint32_t i;
+	for(i = TaskNow->Pid + 1; i < MAX_TASK_NUM; i++) {
+		if(TaskList[i]) {
+			TaskNext = TaskList[i];
+			return TaskNext;
+		}
+	}
+	for(i = 0; i <= TaskNow->Pid; i++) {
+		if(TaskList[i]) {
+			TaskNext = TaskList[i];
+			return TaskNext;
+		}
+	}
+	/* Never come here */
+	return NULL;
 }
 
 TaskTCB * Schd_GetTaskTCBNow()

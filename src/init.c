@@ -1,5 +1,8 @@
 #include "init.h"
 #include "stm32f10x_usart.h"
+#include <irq.h>
+#include <schedule.h>
+#include <core_header.h>
 
 int InitUsart(int baud_rate, 	int word_len, 	int stop_bit, 
               int parity,       int flow_ctrl,  uint32_t mode) 
@@ -63,4 +66,15 @@ int InitUsart(int baud_rate, 	int word_len, 	int stop_bit,
 	}
 
 	return 0;
+}
+
+void OSRun()
+{
+	IRQ_LOCK();
+	TaskTCB * tmp = Schd_GetTaskTCBNow();
+	tmp->StkTopPtr += 8;
+	__set_PSP((uint32_t)(tmp->StkTopPtr));
+	// Schd_Schdule();
+	Schd_TaskCtxSw();
+	IRQ_UNLOCK();
 }
