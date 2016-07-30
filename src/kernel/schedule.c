@@ -2,11 +2,7 @@
 #include <irq.h>
 #include <schedule.h>
 
-#ifdef __GNUC__
-// #include <core_header.h>
-#else
 #include <stm32f10x.h>
-#endif
 
 static TaskTCB * TaskList[MAX_TASK_NUM];
 

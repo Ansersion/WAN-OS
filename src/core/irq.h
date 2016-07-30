@@ -56,6 +56,8 @@
 #define MSK_SYSTICK_CLRPEND 0x02000000
 #define MSK_PENDSV_CLRPEND 	0x08000000
 
+#ifndef __GNUC__
+
 #define IRQ_Reset 	Reset_Handler
 #define IRQ_Nmi 	NMI_Handler
 #define IRQ_HardFault 	HardFault_Handler
@@ -71,6 +73,8 @@
 #define IRQ_NULL_13 	NULL_13_Handler
 #define IRQ_PendSV 	PendSV_Handler
 #define IRQ_SysTick 	SysTick_Handler
+
+#endif
 
 /* WARNING: Setup the interrupt of systick first, before
    using the function.

@@ -41,7 +41,7 @@ TaskTCB TaskRedTcb;
 TaskTCB TaskGreenTcb;
 
 
-unsigned char global_count=0;
+// uint32_t global_count=0x5a5a5a5a;
 
 int main()
 {

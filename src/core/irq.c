@@ -68,7 +68,7 @@ typedef struct
 #define PMT_IRQ_NUM 				16
 
 // static uint32_t * IRQ_PriorityRegList[16];
-extern unsigned char global_count;
+// extern uint32_t global_count;
 
 #define PMT_IRQ_PRIORITY_0 			0x00
 #define PMT_IRQ_PRIORITY_1 			0x10
@@ -87,7 +87,7 @@ extern unsigned char global_count;
 #define PMT_IRQ_PRIORITY_14 		0xE0
 #define PMT_IRQ_PRIORITY_15 		0xF0
 
-extern void * _irq_vectors;
+// extern void * _irq_vectors;
 
 #ifdef __GNUC__
 void IRQ_Reset()
@@ -192,11 +192,11 @@ void IRQ_PendSV_C(void)
 
 void IRQ_SysTick(void)
 {
-	if(global_count++ > 10) {
-//		LED_RED_TURN();
-		// LED_GREEN_TURN();
-		global_count = 0;
-	}
+	// if(global_count++ > 10) {
+//	// 	LED_RED_TURN();
+	// 	// LED_GREEN_TURN();
+	// 	global_count = 0;
+	// }
 	Schd_TaskCtxSw();
 }
 

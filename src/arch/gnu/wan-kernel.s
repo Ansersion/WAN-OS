@@ -1,5 +1,5 @@
 .EQU 	MSP_TOP,		0x20008000              
-.EQU 	_RAM_ADDR, 		0x20000000
+@ .EQU 	_RAM_ADDR, 		0x20000000
 
 .text
 .global 	_start, JMP_MAIN

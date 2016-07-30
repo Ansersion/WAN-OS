@@ -1,10 +1,10 @@
-MEMORY
-{
-	/* /* ROM 是可读的(r)和可执行的(x) */ 
-	/* rom (rx) : ORIGIN = 0, LENGTH = 2M */
-	/* /* RAM 是可读的(r),可写的(w),可执行的(x) */ 
-	/* ram (rwx) : ORIGIN = 0x20000000, LENGTH = 4M */
-}
+/*MEMORY*/
+/*{*/
+	/* ROM 是可读的(r)和可执行的(x) */ 
+	/*rom (rx) : ORIGIN = 0, LENGTH = 0x40000*/
+	/* RAM 是可读的(r),可写的(w),可执行的(x) */ 
+	/* ram (rwx) : ORIGIN = 0x20000000, LENGTH = 0x10000 */
+/*(}*/
 /* SECTIONS 命令 : 定义各输入段到输出段的映射 */
 SECTIONS
 {
@@ -21,7 +21,7 @@ SECTIONS
 		*(.rodata)
 	}
 	. = ALIGN(4);
-	. = 0x20000000;
+	/* . = 0x20000000; */
 	/* 从 0x20000000 开始 */
 	.data : {
 		*(.data)
