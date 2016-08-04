@@ -1,8 +1,9 @@
 #include <irq.h>
 #include <stdio.h>
-// #include "stm32f10x_usart.h"
 #include <schedule.h>
 #include <init.h>
+
+/* TODO: ARCH headers */
 #include <stm32f10x.h>
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
@@ -90,7 +91,7 @@ int main()
 	while(1) {
 		for(i = 0; i < 500000; i++) {
 		}
-		// LED_GREEN_TURN();
+		LED_GREEN_TURN();
 		// LED_RED_TURN();
 		/* never come here */
 	}

@@ -113,7 +113,7 @@ void IRQ_HardFault(void)
 	while(1) {
 		for(i = 0; i < 5000000; i++) {
 		}
-		// LED_RED_TURN();
+		LED_RED_TURN();
 		// LED_GREEN_TURN();
 	}
 }

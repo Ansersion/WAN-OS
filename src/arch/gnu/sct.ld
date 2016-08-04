@@ -12,10 +12,10 @@ SECTIONS
 	/* 从 0x00000000 开始 */
 	. = ALIGN(4);
 	.text : {
-		wan-kernel.o(.text) /* .text of wan-kernel.o must be smaller than 0x00000200 bytes*/
+		startup.o(.text) /* .text of wan-kernel.o must be smaller than 0x00000200 bytes*/
 		/* . = ALIGN(4); */
 		/* . = 0x00000200; */
-		irq_a.o(.text)
+		/* irq_a.o(.text) */
 		*(.text) /* 程序代码 */
 		. = ALIGN(4);
 		*(.rodata)

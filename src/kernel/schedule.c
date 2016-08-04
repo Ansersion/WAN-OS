@@ -2,6 +2,7 @@
 #include <irq.h>
 #include <schedule.h>
 
+/* TODO: ARCH headers */
 #include <stm32f10x.h>
 
 static TaskTCB * TaskList[MAX_TASK_NUM];

@@ -1,8 +1,9 @@
 #include <init.h>
-#include <stm32f10x_usart.h>
 #include <irq.h>
 #include <schedule.h>
 
+/* TODO: ARCH headers */
+#include <stm32f10x_usart.h>
 #ifdef __GNUC__
 // #include <core_header.h>
 #else

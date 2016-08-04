@@ -61,7 +61,8 @@ $(TARGET): $(LIB_KERNEL) $(LIB_ARCH) $(LIB_CORE)
 
 	$(CC) -T $(ARCH_DIR)/gnu/sct.ld -mcpu=cortex-m3 -mthumb -flto -fno-builtin -nostartfiles -o wan-kernel.out *.o
 	$(OBJCOPY) -Obinary -S wan-kernel.out $(TARGET)
-	rm *.o
+	rm -f *.o
+	rm -f $(LIB_CORE) $(LIB_ARCH) $(LIB_KERNEL)
 	$(OBJDUMP) -S wan-kernel.out > wan-kernel.list
 	cscope -Rbq
 
