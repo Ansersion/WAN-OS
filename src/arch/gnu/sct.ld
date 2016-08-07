@@ -8,7 +8,8 @@
 /* SECTIONS 命令 : 定义各输入段到输出段的映射 */
 SECTIONS
 {
-	. = 0x0;
+	/* . = 0x0; */
+	. = 0x20000000;
 	/* 从 0x00000000 开始 */
 	. = ALIGN(4);
 	.text : {
@@ -17,7 +18,9 @@ SECTIONS
 		/* . = 0x00000200; */
 		/* irq_a.o(.text) */
 		*(.text) /* 程序代码 */
-		. = ALIGN(4);
+	}
+	. = ALIGN(4);
+	.rodata : {
 		*(.rodata)
 	}
 	. = ALIGN(4);
