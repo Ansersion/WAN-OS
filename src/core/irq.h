@@ -79,13 +79,13 @@
 /* WARNING: Setup the interrupt of systick first, before
    using the function.
  */
-volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority);
-volatile int32_t Init_IRQGroup(uint32_t GroupLimit);
+int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority);
+int32_t Init_IRQGroup(uint32_t GroupLimit);
 void IRQ_Init(void);
-volatile int32_t IRQ_Enalbe(uint32_t IRQ_Number);
-volatile int32_t IRQ_Disable(uint32_t IRQ_Number);
-volatile int32_t IRQ_SetPend(uint32_t IRQ_Number);
-volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number);
+int32_t IRQ_Enalbe(uint32_t IRQ_Number);
+int32_t IRQ_Disable(uint32_t IRQ_Number);
+int32_t IRQ_SetPend(uint32_t IRQ_Number);
+int32_t IRQ_ClrPend(uint32_t IRQ_Number);
 
 typedef void (* IRQ_HANDLER)(void);
 

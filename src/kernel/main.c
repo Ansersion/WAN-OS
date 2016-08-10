@@ -1,7 +1,9 @@
+/* kernel headers */
 #include <irq.h>
 #include <stdio.h>
 #include <schedule.h>
 #include <init.h>
+#include <memory.h>
 
 /* TODO: ARCH headers */
 #include <stm32f10x.h>
@@ -42,15 +44,19 @@ TaskTCB TaskRedTcb;
 TaskTCB TaskGreenTcb;
 
 
-// uint32_t global_count=0x5a5a5a5a;
+uint32_t global_count=0x5a5a5a5a;
 
 int main()
 {
 	int i;
+	uint32_t HeapSize;
 	GPIO_InitTypeDef GPIO_InitType;
 	GPIO_TypeDef * GPIO_Type;
 	
+	global_count=0xa5a5a5a5;
+	
 	Schd_Init();
+	HeapSize = Mem_Init();
 	TaskRedTcb.StkTopPtr = TaskRedStk;
 	TaskGreenTcb.StkTopPtr = TaskGreenStk;
 

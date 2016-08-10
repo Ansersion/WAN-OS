@@ -208,7 +208,7 @@ void IRQ_SysTick(void)
 #define PRM_SYSTICK_CTRL_CLKSRC_CORE 	0x00000004 /* Flag of using core clock */
 #define PRM_SYSTICK_CTRL_TICKINT 		0x00000002 /* Flag of enabling interrupt generation */
 #define PRM_SYSTICK_CTRL_ENABLE 		0x00000001 /* Flag of enabling systick to time */
-volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
+int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 {
 	if(Ticks > PRM_MAX_TICKS) {
 		return -1;
@@ -219,7 +219,7 @@ volatile int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 	return 0;
 }
 
-volatile int32_t Init_IRQGroup(uint32_t GroupLimit)
+int32_t Init_IRQGroup(uint32_t GroupLimit)
 {
 	*REG_AIRCR = MSK_VECTKEY | GroupLimit;
 	return 0;
@@ -257,22 +257,22 @@ void IRQ_Init(void)
 	// IRQ_UNLOCK();
 }
 
-volatile int32_t IRQ_Enalbe(uint32_t IRQ_Number)
+int32_t IRQ_Enalbe(uint32_t IRQ_Number)
 {
 	return 0;
 }
 
-volatile int32_t IRQ_Disable(uint32_t IRQ_Number)
+int32_t IRQ_Disable(uint32_t IRQ_Number)
 {
 	return 0;
 }
 
-volatile int32_t IRQ_SetPend(uint32_t IRQ_Number)
+int32_t IRQ_SetPend(uint32_t IRQ_Number)
 {
 	return 0;
 }
 
-volatile int32_t IRQ_ClrPend(uint32_t IRQ_Number)
+int32_t IRQ_ClrPend(uint32_t IRQ_Number)
 {
 	if(PMT_EXP_SYSTICK == IRQ_Number) {
 		IRQ_LOCK();

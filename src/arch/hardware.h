@@ -1,0 +1,9 @@
+#ifndef HARDWARE_H
+#define HARDWARE_H
+
+#define MEMORY_BASE 	0x20000000
+#define MEMORY_SIZE 	0x0000C000
+
+#define FLASH_BASE 		0x08000000
+
+#endif
