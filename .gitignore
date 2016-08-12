@@ -13,3 +13,6 @@ cscope*
 src/keil_project
 src/keil_project/
 *.dis
+gtest/*
+gtest/backup
+gtest/backup/*

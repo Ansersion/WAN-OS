@@ -29,11 +29,14 @@ uint32_t Mem_Init(void)
 		}
 	}
 	free_mem_size = i - free_mem_start;
+	if(free_mem_size < sizeof(struct Mem_Block)) {
+		return 0;
+	}
 	
 	/* Must: free_mem_size >= sizeof(struct Mem_Block) */
 	FirstBlock = (struct Mem_Block *)free_mem_start;
 	FirstBlock->Addr = (uint32_t)(FirstBlock + sizeof(struct Mem_Block));
-	FirstBlock->Size = free_mem_size;
+	FirstBlock->Size = free_mem_size - sizeof(struct Mem_Block);
 	FirstBlock->State = MEM_FREE;
 	FirstBlock->Prev = NULL;
 	FirstBlock->Next = NULL;
@@ -46,6 +49,7 @@ void * Mem_Malloc(uint32_t Size)
 	struct Mem_Block * block;
   uint32_t tmp_size;
 	struct Mem_Block * tmp_next;
+	struct Mem_Block * child_block;
 	block = FirstBlock;
 	Size = (Size + sizeof(uint32_t) - 1) / sizeof(uint32_t) * sizeof(uint32_t);
 	do {
@@ -56,16 +60,24 @@ void * Mem_Malloc(uint32_t Size)
 			continue;
 		}
 		tmp_size = block->Size;
+		if(block->Size - Size < sizeof(struct Mem_Block)) {
+			Size = block->Size;
+			child_block = block->Next;
+		} else {
+			child_block = (struct Mem_Block *)(block->Addr + Size);
+		}
 		block->Size = Size;
 		block->State = MEM_BUSY;
 		tmp_next = block->Next;
-		block->Next = (struct Mem_Block *)(block->Addr + Size);
+		block->Next = child_block;
 		
-		block->Next->Prev = block;
-		block->Next->Next = tmp_next;
-		block->Next->State = MEM_FREE;
-		block->Next->Addr = (uint32_t)(block->Next + sizeof(struct Mem_Block));
-		block->Next->Size = tmp_size - Size - sizeof(struct Mem_Block);
+		if(tmp_next != child_block) {
+			block->Next->Prev = block;
+			block->Next->Next = tmp_next;
+			block->Next->State = MEM_FREE;
+			block->Next->Addr = (uint32_t)(block->Next + sizeof(struct Mem_Block));
+			block->Next->Size = tmp_size - Size - sizeof(struct Mem_Block);
+		}
 		
 		return (void *)(block->Addr);
 		
@@ -103,6 +115,7 @@ void Mem_Free(void * Ptr)
 		while(tmp != NULL && MEM_FREE == tmp->State) {
 			block->Next = tmp->Next;
 			block->Size += tmp->Size + sizeof(struct Mem_Block);
+			block = tmp;
 			tmp = block->Next;
 		}
 		
