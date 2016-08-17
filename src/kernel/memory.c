@@ -35,7 +35,7 @@ uint32_t Mem_Init(void)
 	
 	/* Must: free_mem_size >= sizeof(struct Mem_Block) */
 	FirstBlock = (struct Mem_Block *)free_mem_start;
-	FirstBlock->Addr = (uint32_t)(FirstBlock + sizeof(struct Mem_Block));
+	FirstBlock->Addr = (uint32_t)(FirstBlock + 1);
 	FirstBlock->Size = free_mem_size - sizeof(struct Mem_Block);
 	FirstBlock->State = MEM_FREE;
 	FirstBlock->Prev = NULL;
@@ -75,7 +75,7 @@ void * Mem_Malloc(uint32_t Size)
 			block->Next->Prev = block;
 			block->Next->Next = tmp_next;
 			block->Next->State = MEM_FREE;
-			block->Next->Addr = (uint32_t)(block->Next + sizeof(struct Mem_Block));
+			block->Next->Addr = (uint32_t)(block->Next + 1);
 			block->Next->Size = tmp_size - Size - sizeof(struct Mem_Block);
 		}
 		
@@ -103,8 +103,12 @@ void Mem_Free(void * Ptr)
 			return;
 		}
 		
+		block->State = MEM_FREE;
 		tmp = block->Prev;
 		while(tmp != NULL && MEM_FREE == tmp->State) {
+			if(block->Next) {
+				block->Next->Prev = tmp;
+			}
 			tmp->Next = block->Next;
 			tmp->Size += block->Size + sizeof(struct Mem_Block);
 			block = tmp;
@@ -113,6 +117,9 @@ void Mem_Free(void * Ptr)
 		
 		tmp = block->Next;
 		while(tmp != NULL && MEM_FREE == tmp->State) {
+			if(tmp->Next) {
+				tmp->Next->Prev = block;
+			}
 			block->Next = tmp->Next;
 			block->Size += tmp->Size + sizeof(struct Mem_Block);
 			block = tmp;
