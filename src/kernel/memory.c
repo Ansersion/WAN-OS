@@ -23,6 +23,7 @@ uint32_t Mem_Init(void)
 	uint32_t free_mem_size;
 	int i;
 	free_mem_start = Mem_GetKernelEndAddr();
+	free_mem_start = (free_mem_start + sizeof(uint32_t) - 1) / sizeof(uint32_t) * sizeof(uint32_t);
 	for(i = free_mem_start; i < MEMORY_BASE + MEMORY_SIZE; i+=sizeof(uint32_t)) {
 		if(*(uint32_t *)(i) != 0) {
 			break;
