@@ -40,6 +40,9 @@ void * TaskGreen(void * arg);
 TASK_STK 	TaskRedStk[128];
 TASK_STK 	TaskGreenStk[128];
 
+// TASK_STK * TaskRedStk;
+// TASK_STK * TaskGreenStk;
+
 TaskTCB TaskRedTcb;
 TaskTCB TaskGreenTcb;
 
@@ -55,8 +58,14 @@ int main()
 	
 	global_count=0xa5a5a5a5;
 	
+	IRQ_LOCK();
+	
 	Schd_Init();
 	HeapSize = Mem_Init();
+	
+//	TaskRedStk = Mem_Malloc(128);
+//	TaskGreenStk = Mem_Malloc(128);
+	
 	TaskRedTcb.StkTopPtr = TaskRedStk;
 	TaskGreenTcb.StkTopPtr = TaskGreenStk;
 

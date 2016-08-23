@@ -1,5 +1,12 @@
 #include <mutex.h>
 #include <irq.h>
+#include <schedule.h>
+
+int MutexInit(struct Mutex * Mtx)
+{
+	Mtx->X = 1;
+	return 0;
+}
 
 int MutexLock(struct Mutex * Mtx)
 {
@@ -23,8 +30,8 @@ int MutexTryLock(struct Mutex * Mtx)
 		return ret;
 	}
 	IRQ_LOCK();
-	if(0 == Mtx->X) {
-		Mtx->X = 1;
+	if(Mtx->X > 0) {
+		Mtx->X--;
 		ret = 0;
 	} else {
 		ret = -2;
@@ -42,8 +49,8 @@ int MutexUnlock(struct Mutex * Mtx)
 		return ret;
 	}
 	IRQ_LOCK();
-	if(Mtx->X != 0) {
-		Mtx->X = 0;
+	if(Mtx->X <= 0) {
+		Mtx->X++;
 		ret = 0;
 	} else {
 		ret = -2;

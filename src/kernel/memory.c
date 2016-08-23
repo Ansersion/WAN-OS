@@ -7,8 +7,13 @@
 /* arch headers */
 #include <hardware.h>
 
+/* core headers */
+#include <mutex.h>
+
+
 
 struct Mem_Block * FirstBlock;
+struct Mutex Mtx;
 
 
 uint32_t Mem_GetKernelEndAddr(void)
@@ -25,11 +30,15 @@ uint32_t Mem_Init(void)
 	free_mem_start = Mem_GetKernelEndAddr();
 	free_mem_start = (free_mem_start + sizeof(uint32_t) - 1) / sizeof(uint32_t) * sizeof(uint32_t);
 	for(i = free_mem_start; i < MEMORY_BASE + MEMORY_SIZE; i+=sizeof(uint32_t)) {
+		/*
 		if(*(uint32_t *)(i) != 0) {
 			break;
 		}
+		*/
+		*(uint32_t *)(i) = 0;
 	}
 	free_mem_size = i - free_mem_start;
+	MutexInit(&Mtx);
 	if(free_mem_size < sizeof(struct Mem_Block)) {
 		return 0;
 	}
@@ -51,6 +60,11 @@ void * Mem_Malloc(uint32_t Size)
   uint32_t tmp_size;
 	struct Mem_Block * tmp_next;
 	struct Mem_Block * child_block;
+	void * ret;
+	ret = NULL;
+	
+	MutexLock(&Mtx);
+	
 	block = FirstBlock;
 	Size = (Size + sizeof(uint32_t) - 1) / sizeof(uint32_t) * sizeof(uint32_t);
 	do {
@@ -79,12 +93,15 @@ void * Mem_Malloc(uint32_t Size)
 			block->Next->Addr = (uint32_t)(block->Next + 1);
 			block->Next->Size = tmp_size - Size - sizeof(struct Mem_Block);
 		}
-		
-		return (void *)(block->Addr);
+		ret = (void *)(block->Addr);
+		// return (void *)(block->Addr);
+		break;
 		
 	} while((block = block->Next) != NULL);
 	
-	return NULL;
+	MutexUnlock(&Mtx);
+	
+	return ret;
 }
 
 void Mem_Free(void * Ptr)
@@ -93,6 +110,9 @@ void Mem_Free(void * Ptr)
 	struct Mem_Block * tmp;
 //	uint32_t tmp_size;
 //	struct Mem_Block * tmp_next;
+	
+	MutexLock(&Mtx);
+	
 	block = FirstBlock;
 	
 	do {
@@ -101,7 +121,8 @@ void Mem_Free(void * Ptr)
 		}
 		if(MEM_FREE == block->State) {
 			/* alread freed */
-			return;
+			break;
+			// return;
 		}
 		
 		block->State = MEM_FREE;
@@ -128,4 +149,6 @@ void Mem_Free(void * Ptr)
 		}
 		
 	} while((block = block->Next) != NULL);
+	
+	MutexUnlock(&Mtx);
 }
