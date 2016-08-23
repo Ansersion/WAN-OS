@@ -76,6 +76,11 @@
 
 #endif
 
+#define SVC_MALLOC 	0
+#define SVC_FREE 	1
+
+#define SVC_CALL(IRQ_Num, arg) { __asm volatile ("svc IRQ_NUM" : : "r"(arg) ); }
+
 /* WARNING: Setup the interrupt of systick first, before
    using the function.
  */
@@ -102,7 +107,7 @@ void IRQ_NULL_7(void);
 void IRQ_NULL_8(void);
 void IRQ_NULL_9(void);
 void IRQ_NULL_10(void);
-void IRQ_SVC(void);
+void IRQ_SVC_C(int IRQ_Num,void * arg);
 void IRQ_DebugMon(void);
 void IRQ_NULL_13(void);
 void IRQ_PendSV(void);
@@ -115,5 +120,6 @@ void IRQ_UNLOCK(void); // asm function(asm_tool.s)
 // {
 // 	SCB->ICSR |= SCB_ICSR_PENDSTSET_Msk;
 // }
+
 
 #endif

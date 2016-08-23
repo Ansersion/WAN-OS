@@ -1,5 +1,5 @@
 .text
-.global 	IRQ_LOCK, IRQ_UNLOCK, IRQ_PendSV
+.global 	IRQ_LOCK, IRQ_UNLOCK, IRQ_PendSV, IRQ_SVC
 .code 		16
 .syntax 	unified
 .align
@@ -10,6 +10,21 @@ IRQ_LOCK:
 
 IRQ_UNLOCK:
 	CPSIE 	I
+	BX 		LR
+
+@ IRQ_SVC
+IRQ_SVC:
+	TST 	LR, #0x4
+	ITE 	EQ
+	MRSEQ 	R0, MSP
+	MRSNE 	R0, PSP
+	LDR 	R1, [R0,#24]
+	LDR 	R2, [R0]
+	LDRB 	R0, [R1,#-2]
+	MOV 	R1, R2
+	PUSH 	{LR}
+	BL 	IRQ_SVC_C
+	POP 	{LR}
 	BX 		LR
 
 IRQ_PendSV:

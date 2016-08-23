@@ -7,6 +7,9 @@
 /* arch headers */
 #include <hardware.h>
 
+/* core headers */
+#include <irq.h>
+
 
 struct Mem_Block * FirstBlock;
 
@@ -129,3 +132,9 @@ void Mem_Free(void * Ptr)
 		
 	} while((block = block->Next) != NULL);
 }
+
+// void Free(void * Ptr)
+// {
+// { __asm volatile ("svc 1" : : "r"(Ptr) ); }
+// 	SVC_CALL(SVC_FREE, Ptr);
+// }

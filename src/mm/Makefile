@@ -3,12 +3,12 @@ PREFIX=$(ARM_GCC_MAIN_DIR)/bin/arm-none-eabi
 # PREFIX=arm-linux-gnueabi
 # PREFIX=arm-linux-gnueabi
 
-TARGET=core.a
+TARGET=mm.a
 
-CORE_DIR=./
+CORE_DIR=../core
 ARCH_DIR=../arch
 KERNEL_DIR=../kernel
-MM_DIR=../mm
+MM_DIR=.
 
 AS=$(PREFIX)-as
 CC=$(PREFIX)-gcc
@@ -39,9 +39,7 @@ A_OBJ 	=
 OBJ 	=
 
 C_SRC 	+= ${wildcard *.c}
-C_SRC 	+= ${wildcard ./gnu/*.c}
 A_SRC 	+= ${wildcard *.s}
-A_SRC 	+= ${wildcard ./gnu/*.s}
 SRC 	+= $(C_SRC)
 SRC 	+= $(A_SRC)
 

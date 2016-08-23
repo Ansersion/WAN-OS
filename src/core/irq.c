@@ -4,6 +4,7 @@
 // #include "core_cm3.h"
 // #include <core_header.h>
 #include "schedule.h"
+#include <memory.h>
 
 #include <string.h>
 
@@ -152,8 +153,24 @@ void IRQ_NULL_10(void)
 {
 }
 
-void IRQ_SVC(void)
+/* void IRQ_SVC(void): asm function in asm_tool.s */
+void IRQ_SVC_C(int IRQ_Num, void * arg)
 {
+	switch(IRQ_Num) {
+		case SVC_MALLOC:
+			if(!arg) {
+				break;
+			}
+			Mem_Malloc(*((uint32_t *)arg));
+			break;
+		case SVC_FREE:
+			if(!arg) {
+				break;
+			}
+			Mem_Free(arg);
+		default:
+			break;
+	}
 }
 
 void IRQ_DebugMon(void)

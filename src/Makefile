@@ -6,12 +6,14 @@ PREFIX=$(ARM_GCC_MAIN_DIR)/bin/arm-none-eabi
 CORE_DIR=core
 ARCH_DIR=arch
 KERNEL_DIR=kernel
+MM_DIR=mm
 
 TARGET=wan-kernel.bin
 
 LIB_CORE 	+= $(CORE_DIR)/core.a
 LIB_ARCH 	+= $(ARCH_DIR)/arch.a
 LIB_KERNEL 	+= $(KERNEL_DIR)/kernel.a
+LIB_MM 		+= $(MM_DIR)/mm.a
 
 AS=$(PREFIX)-as
 CC=$(PREFIX)-gcc
@@ -25,6 +27,7 @@ MACRO=
 INCLUDE += -I$(CORE_DIR)
 INCLUDE += -I$(ARCH_DIR)
 INCLUDE += -I$(KERNEL_DIR)
+INCLUDE += -I$(MM_DIR)
 
 MACRO += -DSTM32F10X_HD
 
@@ -54,15 +57,16 @@ SRC 	+= $(A_SRC)
 
 ALL: $(TARGET)
 
-$(TARGET): $(LIB_KERNEL) $(LIB_ARCH) $(LIB_CORE)
+$(TARGET): $(LIB_KERNEL) $(LIB_ARCH) $(LIB_CORE) $(LIB_MM)
 	ar xv $(LIB_CORE)
 	ar xv $(LIB_ARCH)
 	ar xv $(LIB_KERNEL)
+	ar xv $(LIB_MM)
 
 	$(CC) -T $(ARCH_DIR)/gnu/sct.ld -mcpu=cortex-m3 -mthumb -flto -fno-builtin -nostartfiles -o wan-kernel.out *.o
 	$(OBJCOPY) -Obinary wan-kernel.out $(TARGET)
 	rm -f *.o
-	rm -f $(LIB_CORE) $(LIB_ARCH) $(LIB_KERNEL)
+	rm -f $(LIB_CORE) $(LIB_ARCH) $(LIB_KERNEL) $(LIB_MM)
 	$(OBJDUMP) -S wan-kernel.out > wan-kernel.list
 	$(OBJDUMP) -D wan-kernel.out > wan-kernel.dis
 	cscope -Rbq
@@ -76,6 +80,9 @@ $(LIB_ARCH):
 $(LIB_CORE):
 	(cd $(CORE_DIR); make)
 
+$(LIB_MM):
+	(cd $(MM_DIR); make)
+
 # $(A_OBJ):%.o:%.s
 # 	$(AS) -mcpu=cortex-m3 -mthumb $< -o $@
 # 
@@ -86,4 +93,5 @@ clean:
 	(cd $(CORE_DIR); make clean)
 	(cd $(ARCH_DIR); make clean)
 	(cd $(KERNEL_DIR); make clean)
+	(cd $(MM_DIR); make clean)
 	rm -f *.o $(TARGET) *.out *.list
