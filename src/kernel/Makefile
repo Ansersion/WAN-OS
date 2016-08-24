@@ -7,6 +7,7 @@ TARGET=kernel.a
 
 CORE_DIR=../core
 ARCH_DIR=../arch
+MM_DIR=../mm
 KERNEL_DIR=./
 
 AS=$(PREFIX)-as
@@ -21,6 +22,7 @@ MACRO=
 INCLUDE += -I$(CORE_DIR)
 INCLUDE += -I$(ARCH_DIR)
 INCLUDE += -I$(KERNEL_DIR)
+INCLUDE += -I$(MM_DIR)
 
 MACRO += -DSTM32F10X_HD
 

@@ -11,6 +11,9 @@
 #include <stm32f10x_rcc.h>
 
 
+/* test */
+#include <sys_call.h>
+
 /*
 typedef struct
 { 
@@ -37,11 +40,11 @@ typedef struct
 void * TaskRed(void * arg);
 void * TaskGreen(void * arg);
 
-TASK_STK 	TaskRedStk[128];
-TASK_STK 	TaskGreenStk[128];
+// TASK_STK 	TaskRedStk[128];
+// TASK_STK 	TaskGreenStk[128];
 
-// TASK_STK * TaskRedStk;
-// TASK_STK * TaskGreenStk;
+TASK_STK * TaskRedStk;
+TASK_STK * TaskGreenStk;
 
 TaskTCB TaskRedTcb;
 TaskTCB TaskGreenTcb;
@@ -63,8 +66,14 @@ int main()
 	Schd_Init();
 	HeapSize = Mem_Init();
 	
-//	TaskRedStk = Mem_Malloc(128);
-//	TaskGreenStk = Mem_Malloc(128);
+	IRQ_Init();
+	Init_SysTickIRQ(9000, 1);
+	NVIC_SetPriority(PendSV_IRQn, 0xf);
+	NVIC_SetPriority(SVCall_IRQn, 0xD);
+	IRQ_UNLOCK();
+	
+  TaskRedStk = Malloc(128);
+  TaskGreenStk = Malloc(128);
 	
 	TaskRedTcb.StkTopPtr = TaskRedStk;
 	TaskGreenTcb.StkTopPtr = TaskGreenStk;
@@ -76,10 +85,14 @@ int main()
 	Schd_CreateTask(TaskGreen, NULL, &TaskGreenTcb);
 
 	Schd_SetTaskTCBNow(&TaskGreenTcb);
+		
 
+/*
 	IRQ_Init();
 	Init_SysTickIRQ(9000, 1);
 	NVIC_SetPriority(PendSV_IRQn, 0xf);
+	NVIC_SetPriority(SVCall_IRQn, 0xD);
+	*/
 		// Enable clock of GPIO-A and GPIO-D
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOD, ENABLE);
 	
@@ -99,8 +112,6 @@ int main()
 	GPIO_Type = GPIOD;
 	GPIO_InitType.GPIO_Pin = GPIO_Pin_2;
 	GPIO_Init(GPIO_Type, &GPIO_InitType);
-	
-	IRQ_UNLOCK();
 	
 	OSRun();
 	while(1) {

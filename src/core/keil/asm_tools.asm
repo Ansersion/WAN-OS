@@ -1,8 +1,10 @@
 	IMPORT  IRQ_PendSV_C
+	IMPORT IRQ_SVC_C
 	
 	EXPORT	IRQ_LOCK
 	EXPORT 	IRQ_UNLOCK
 	EXPORT 	PendSV_Handler
+	EXPORT 	SVC_Handler
 	
 ; NVIC_INT_CTRL	EQU			0xE000ED04	; Address of NVIC Interruptions Control Register
 ; NVIC_PENDSVSET	EQU			0x10000000	; Enable PendSV
@@ -22,6 +24,22 @@ IRQ_UNLOCK
 	CPSIE	I	
 	BX	LR 
 
+; IRQ_SVC
+SVC_Handler
+	TST 	LR, #0x4
+	ITE 	EQ
+	MRSEQ 	R3, MSP
+	MRSNE 	R3, PSP
+	LDR 	R1, [R3,#24]
+	LDRB 	R2, [R1,#-2]
+	LDR 	R0, [R3]
+	LDR 	R1, [R3,#4]
+	PUSH 	{LR}
+	BL 		IRQ_SVC_C
+	POP 	{LR}
+	BX 		LR
+
+; IRQ_PendSV
 PendSV_Handler
 	cpsid 	I
 	mrs 	r0, psp

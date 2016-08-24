@@ -9,7 +9,8 @@
 
 /* core headers */
 #include <mutex.h>
-
+#include <irq.h>
+#include <sys_call.h>
 
 
 struct Mem_Block * FirstBlock;
@@ -152,3 +153,21 @@ void Mem_Free(void * Ptr)
 	
 	MutexUnlock(&Mtx);
 }
+
+void * Malloc(uint32_t size)
+{
+	typedef struct svc_malloc_t{
+		uint32_t size;
+		void * ret;
+	}svc_malloc_t;
+	svc_malloc_t arg;
+	arg.size = size;
+	SysCall(SVC_MALLOC, &arg);
+	return arg.ret;
+}
+
+void Free(void * Ptr)
+{
+	SysCall(SVC_FREE, Ptr);
+}
+

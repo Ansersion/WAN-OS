@@ -20,5 +20,8 @@ uint32_t Mem_Init(void);
 void * Mem_Malloc(uint32_t Size);
 void Mem_Free(void * Ptr);
 
+void * Malloc(uint32_t size);
+void Free(void * Ptr);
+
 #endif
 
