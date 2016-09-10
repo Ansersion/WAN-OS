@@ -9,10 +9,25 @@
 #include <stm32f10x.h>
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
+#include <stm32f10x_usart.h>
+
+#include <usart.h>
 
 
 /* test */
 #include <sys_call.h>
+#include <adc.h>
+
+
+/*
+* USART1 sends data 
+*/
+#define USART1_SEND(ch) (USART1->DR = (ch) & (uint16_t)0x01FF)
+
+/*
+* USART1 receive data
+*/
+#define USART1_RECEIVE(ch) ((ch) = USART1->DR & (uint16_t)0x01FF)
 
 /*
 typedef struct
@@ -39,15 +54,18 @@ typedef struct
 
 void * TaskRed(void * arg);
 void * TaskGreen(void * arg);
+void * TaskAdc(void *arg);
 
-// TASK_STK 	TaskRedStk[128];
-// TASK_STK 	TaskGreenStk[128];
+TASK_STK 	TaskRedStk[128];
+TASK_STK 	TaskGreenStk[128];
+TASK_STK	TaskAdcStk[128];
 
-TASK_STK * TaskRedStk;
-TASK_STK * TaskGreenStk;
+// TASK_STK * TaskRedStk;
+// TASK_STK * TaskGreenStk;
 
 TaskTCB TaskRedTcb;
 TaskTCB TaskGreenTcb;
+TaskTCB TaskAdcTcb;
 
 
 uint32_t global_count=0x5a5a5a5a;
@@ -70,23 +88,28 @@ int main()
 	Init_SysTickIRQ(9000, 1);
 	NVIC_SetPriority(PendSV_IRQn, 0xf);
 	NVIC_SetPriority(SVCall_IRQn, 0xD);
-	IRQ_UNLOCK();
+	// IRQ_UNLOCK();
 	
-  TaskRedStk = Malloc(128);
-  TaskGreenStk = Malloc(128);
+  // TaskRedStk = Malloc(128);
+  // TaskGreenStk = Malloc(128);
 	
 	TaskRedTcb.StkTopPtr = TaskRedStk;
 	TaskGreenTcb.StkTopPtr = TaskGreenStk;
+	TaskAdcTcb.StkTopPtr = TaskAdcStk;
 
 	TaskRedTcb.StkSize = 128;
 	TaskGreenTcb.StkSize = 128;
+	TaskAdcTcb.StkSize = 128;
 
 	Schd_CreateTask(TaskRed, NULL, &TaskRedTcb);
 	Schd_CreateTask(TaskGreen, NULL, &TaskGreenTcb);
+	Schd_CreateTask(TaskAdc, NULL, &TaskAdcTcb);
 
 	Schd_SetTaskTCBNow(&TaskGreenTcb);
+	USART1_Configuration(9600);
+	ADC_Configuration();
 		
-
+	IRQ_UNLOCK();
 /*
 	IRQ_Init();
 	Init_SysTickIRQ(9000, 1);
@@ -157,9 +180,30 @@ void * TaskRed(void * arg)
 void * TaskGreen(void * arg)
 {
 	int i;
+
 	while(1) {
 		for(i = 0; i < 500000; i++) {
+
 		}
+		// while(USART_GetITStatus(USART1, USART_IT_TXE) != RESET) {
+		while((USART1->SR&0X40)==0)
+			;
+		// }
 		LED_GREEN_TURN();
+	}
+}
+
+void * TaskAdc(void *arg)
+{
+	uint16_t adc;
+	uint8_t tmp;
+	while(1) {
+		
+		adc = GetAdc();
+		tmp = adc;
+		USART1_SEND(tmp);
+		tmp = adc >> 8;
+		USART1_SEND(tmp);
+		USART1_SEND(' ');
 	}
 }

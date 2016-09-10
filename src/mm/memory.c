@@ -14,7 +14,7 @@
 
 
 struct Mem_Block * FirstBlock;
-struct Mutex Mtx;
+// struct Mutex Mtx;
 
 
 uint32_t Mem_GetKernelEndAddr(void)
@@ -39,7 +39,7 @@ uint32_t Mem_Init(void)
 		*(uint32_t *)(i) = 0;
 	}
 	free_mem_size = i - free_mem_start;
-	MutexInit(&Mtx);
+//	MutexInit(&Mtx);
 	if(free_mem_size < sizeof(struct Mem_Block)) {
 		return 0;
 	}
@@ -64,7 +64,7 @@ void * Mem_Malloc(uint32_t Size)
 	void * ret;
 	ret = NULL;
 	
-	MutexLock(&Mtx);
+//	MutexLock(&Mtx);
 	
 	block = FirstBlock;
 	Size = (Size + sizeof(uint32_t) - 1) / sizeof(uint32_t) * sizeof(uint32_t);
@@ -100,7 +100,7 @@ void * Mem_Malloc(uint32_t Size)
 		
 	} while((block = block->Next) != NULL);
 	
-	MutexUnlock(&Mtx);
+//	MutexUnlock(&Mtx);
 	
 	return ret;
 }
@@ -112,7 +112,7 @@ void Mem_Free(void * Ptr)
 //	uint32_t tmp_size;
 //	struct Mem_Block * tmp_next;
 	
-	MutexLock(&Mtx);
+//	MutexLock(&Mtx);
 	
 	block = FirstBlock;
 	
@@ -151,16 +151,12 @@ void Mem_Free(void * Ptr)
 		
 	} while((block = block->Next) != NULL);
 	
-	MutexUnlock(&Mtx);
+//	MutexUnlock(&Mtx);
 }
 
 void * Malloc(uint32_t size)
 {
-	typedef struct svc_malloc_t{
-		uint32_t size;
-		void * ret;
-	}svc_malloc_t;
-	svc_malloc_t arg;
+	SvcMallocType arg;
 	arg.size = size;
 	SysCall(SVC_MALLOC, &arg);
 	return arg.ret;
@@ -168,6 +164,9 @@ void * Malloc(uint32_t size)
 
 void Free(void * Ptr)
 {
-	SysCall(SVC_FREE, Ptr);
+	SvcFreeType arg;
+	arg.ptr = Ptr;
+	SysCall(SVC_FREE, &arg);
+	return;
 }
 

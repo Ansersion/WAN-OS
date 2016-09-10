@@ -1,12 +1,14 @@
 #include <irq.h>
 #include <stm32f10x_usart.h>
+// #include <misc.h>
 // #include "ARMCM3.h"
 // #include "core_cm3.h"
 // #include <core_header.h>
-#include "schedule.h"
+#include <schedule.h>
 #include <memory.h>
 
 #include <string.h>
+#include <sys_call.h>
 
 /*
 typedef struct
@@ -156,24 +158,21 @@ void IRQ_NULL_10(void)
 /* void IRQ_SVC(void): asm function in asm_tool.s */
 void IRQ_SVC_C(int IRQ_Num, void * arg)
 {
-	typedef struct svc_malloc_t{
-		uint32_t size;
-		void * ret;
-	}svc_malloc_t;
-	svc_malloc_t * m_arg;
-	m_arg = (svc_malloc_t *)arg;
+
+//	svc_malloc_t * m_arg;
+//	m_arg = (svc_malloc_t *)arg;
 	switch(IRQ_Num) {
 		case SVC_MALLOC:
 			if(!arg) {
 				break;
 			}
-			m_arg->ret = Mem_Malloc(m_arg->size);
+			((SvcMallocType *)arg)->ret = Mem_Malloc(((SvcMallocType *)arg)->size);
 			break;
 		case SVC_FREE:
 			if(!arg) {
 				break;
 			}
-			Mem_Free(arg);
+			Mem_Free(((SvcFreeType *)arg)->ptr);
 		default:
 			break;
 	}
@@ -244,7 +243,12 @@ int32_t Init_SysTickIRQ(uint32_t Ticks, uint32_t Priority)
 
 int32_t Init_IRQGroup(uint32_t GroupLimit)
 {
-	*REG_AIRCR = MSK_VECTKEY | GroupLimit;
+//	*REG_AIRCR = MSK_VECTKEY | GroupLimit;
+	if(GroupLimit > 0x7) {
+		return -1;
+	}
+	
+	SCB->AIRCR = MSK_VECTKEY | (GroupLimit << 0x8);
 	return 0;
 }
 
@@ -268,6 +272,9 @@ void IRQ_Init(void)
 	// IRQ_PriorityRegList[13] = REG_EXP_PRI_NULL_13;
 	// IRQ_PriorityRegList[14] = REG_EXP_PRI_PEND_SV;
 	// IRQ_PriorityRegList[15] = REG_EXP_PRI_SYSTICK;
+	
+	// NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	Init_IRQGroup(1);
 	SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
 	SCB->ICSR |= SCB_ICSR_PENDSTCLR_Msk;
 	SCB->ICSR |= SCB_ICSR_PENDSVCLR_Msk;
