@@ -17,6 +17,7 @@
 /* test */
 #include <sys_call.h>
 #include <adc.h>
+#include <clk.h>
 
 
 /*
@@ -85,6 +86,7 @@ int main()
 	HeapSize = Mem_Init();
 	
 	IRQ_Init();
+	InitClk();
 	Init_SysTickIRQ(9000, 1);
 	NVIC_SetPriority(PendSV_IRQn, 0xf);
 	NVIC_SetPriority(SVCall_IRQn, 0xD);
